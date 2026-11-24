@@ -1,0 +1,3025 @@
+<!doctype html>
+<html lang="so">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Thesis Project Manager</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --sb: #384fba;
+        --sbtx: rgba(255, 255, 255, 0.82);
+        --sbh: #fff;
+        --on: rgba(255, 255, 255, 0.18);
+        --onx: #fff;
+        --hv: rgba(255, 255, 255, 0.1);
+        --sbl: transparent;
+        --bg: #eef0f6;
+        --bg2: #e4e7f1;
+        --card: #ffffff;
+        --line: #dde0ec;
+        --ink: #1d2033;
+        --mut: #62677f;
+        --acc: #384fba;
+        --in: #f5f6fb;
+        --sh: 0 6px 20px rgba(40, 50, 110, 0.08);
+        --btn: #384fba;
+        --btnh: #2f43a3;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        color-scheme: light;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --sb: #1e1f25;
+          --sbtx: #a8acbc;
+          --sbh: #fff;
+          --on: #384fba;
+          --onx: #fff;
+          --hv: rgba(255, 255, 255, 0.07);
+          --sbl: #2e3039;
+          --bg: #17181c;
+          --bg2: #1f2026;
+          --card: #24252b;
+          --line: #34363f;
+          --ink: #e6e8ef;
+          --mut: #9fa3b4;
+          --acc: #7389ee;
+          --in: #1b1c21;
+          --sh: 0 6px 22px rgba(0, 0, 0, 0.35);
+          --btn: #3390ec;
+          --btnh: #5a71e2;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --sb: #1e1f25;
+        --sbtx: #a8acbc;
+        --sbh: #fff;
+        --on: #384fba;
+        --onx: #fff;
+        --hv: rgba(255, 255, 255, 0.07);
+        --sbl: #2e3039;
+        --bg: #17181c;
+        --bg2: #1f2026;
+        --card: #24252b;
+        --line: #34363f;
+        --ink: #e6e8ef;
+        --mut: #9fa3b4;
+        --acc: #7389ee;
+        --in: #1b1c21;
+        --sh: 0 6px 22px rgba(0, 0, 0, 0.35);
+        --btn: #3390ec;
+        --btnh: #5a71e2;
+        color-scheme: dark;
+      }
+      :root[data-theme="light"] {
+        --sb: #384fba;
+        --sbtx: rgba(255, 255, 255, 0.82);
+        --sbh: #fff;
+        --on: rgba(255, 255, 255, 0.18);
+        --onx: #fff;
+        --hv: rgba(255, 255, 255, 0.1);
+        --sbl: transparent;
+        --bg: #eef0f6;
+        --bg2: #e4e7f1;
+        --card: #ffffff;
+        --line: #dde0ec;
+        --ink: #1d2033;
+        --mut: #62677f;
+        --acc: #384fba;
+        --in: #f5f6fb;
+        --sh: 0 6px 20px rgba(40, 50, 110, 0.08);
+        --btn: #384fba;
+        --btnh: #2f43a3;
+        color-scheme: light;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "DM Sans", system-ui, sans-serif;
+        margin: 0;
+        color: var(--ink);
+        background: var(--bg);
+        min-height: 100vh;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+        background: none;
+        border: 0;
+        color: inherit;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--sh);
+      }
+      .lift {
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .lift:hover {
+        border-color: var(--acc);
+      }
+      .inp {
+        background: var(--in);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.55rem 0.8rem;
+        color: var(--ink);
+        width: 100%;
+        min-height: 44px;
+        font: inherit;
+      }
+      .inp:focus,
+      button:focus-visible {
+        outline: 2px solid var(--acc);
+        outline-offset: 1px;
+      }
+      .btn {
+        background: var(--btn);
+        color: #fff;
+        border-radius: 12px;
+        padding: 0.55rem 1rem;
+        font-weight: 600;
+        min-height: 44px;
+        box-shadow: 0 4px 12px rgba(56, 79, 186, 0.25);
+        transition: transform 0.15s;
+        display: inline-flex;
+        gap: 0.45rem;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn:hover {
+        background: var(--btnh);
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .b2 {
+        border: 1px solid var(--line);
+        background: var(--card);
+        border-radius: 12px;
+        padding: 0.45rem 0.75rem;
+        min-height: 40px;
+        display: inline-flex;
+        gap: 0.4rem;
+        align-items: center;
+      }
+      .b2:hover {
+        border-color: var(--acc);
+      }
+      .ic {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 1.9;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        flex: none;
+      }
+      .mut {
+        color: var(--mut);
+      }
+      .nav {
+        display: flex;
+        gap: 0.7rem;
+        align-items: center;
+        padding: 0.55rem 0.85rem;
+        border-radius: 12px;
+        width: 100%;
+        text-align: left;
+        color: var(--sbtx);
+        transition: background 0.15s;
+      }
+      .nav:hover {
+        background: var(--hv);
+      }
+      .nav.on {
+        background: var(--on);
+        color: var(--onx);
+        font-weight: 600;
+        box-shadow: inset 3px 0 0 #fff;
+      }
+      .wk {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        color: #fff;
+        font-weight: 700;
+        flex: none;
+        display: grid;
+        place-items: center;
+      }
+      .w1 {
+        background: #3fbf7f;
+      }
+      .w0 {
+        background: #ef4444;
+      }
+      .wn {
+        background: var(--line);
+        color: var(--mut);
+      }
+      .badge {
+        padding: 0.15rem 0.6rem;
+        border-radius: 9px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .pill {
+        display: inline-flex;
+        gap: 0.3rem;
+        align-items: center;
+        border-radius: 999px;
+        padding: 0.25rem 0.7rem;
+        background: var(--bg2);
+        border: 1px solid var(--line);
+        font-size: 0.9rem;
+      }
+      .pill.sel {
+        background: var(--btn);
+        color: #fff;
+        border-color: var(--btn);
+      }
+      [role="option"]:hover {
+        background: var(--bg2);
+      }
+      .pop {
+        animation: pop 0.18s ease-out;
+      }
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+      }
+      .scroll {
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      .sec {
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--sbtx);
+        padding: 1rem 0.85rem 0.35rem;
+      }
+      .trg {
+        display: grid;
+        gap: 14px;
+      }
+      @media (min-width: 1024px) {
+        .trg {
+          grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.2fr) 296px 190px;
+        }
+      }
+      th {
+        text-align: left;
+        font-weight: 500;
+        color: var(--mut);
+        font-size: 0.85rem;
+        padding: 0.75rem;
+      }
+      td {
+        padding: 0.7rem 0.75rem;
+        border-top: 1px solid var(--line);
+      }
+      .sbar {
+        transition: width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+      /* ===== v3 design: calm teal/slate, square corners ===== */
+      :root,:root[data-theme="light"]{--sb:#1b2a2e;--sbtx:rgba(255,255,255,.72);--on:#0f766e;--hv:rgba(255,255,255,.08);--sbl:transparent;--bg:#f2f3ef;--bg2:#eceee9;--card:#fff;--line:#d8dcd3;--ink:#1d2a2c;--mut:#5e6c6d;--acc:#0f766e;--in:#f7f8f5;--sh:none;--btn:#0f766e;--btnh:#0b5f58;color-scheme:light}
+      @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sb:#0e1315;--sbtx:#9aa8a7;--on:#1b8a7f;--hv:rgba(255,255,255,.06);--sbl:#232c30;--bg:#121719;--bg2:#181e21;--card:#1a2124;--line:#2a3337;--ink:#e3e9e7;--mut:#94a3a2;--acc:#4fb8aa;--in:#12181a;--sh:none;--btn:#1b8a7f;--btnh:#229c90;color-scheme:dark}}
+      :root[data-theme="dark"]{--sb:#0e1315;--sbtx:#9aa8a7;--on:#1b8a7f;--hv:rgba(255,255,255,.06);--sbl:#232c30;--bg:#121719;--bg2:#181e21;--card:#1a2124;--line:#2a3337;--ink:#e3e9e7;--mut:#94a3a2;--acc:#4fb8aa;--in:#12181a;--sh:none;--btn:#1b8a7f;--btnh:#229c90;color-scheme:dark}
+      .card,.inp,.btn,.b2,.nav,.pill,.badge,.wk,.rounded-xl,.rounded-2xl,.rounded-lg{border-radius:var(--rad,4px)!important}
+      .btn{box-shadow:none}.btn.sm{min-height:36px;padding:.3rem .8rem;font-size:.9rem}
+      *{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+      ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+      table{border-collapse:separate;border-spacing:0 6px}
+      th{padding:.4rem .75rem;font-size:.8rem}
+      td{border:0;background:var(--bg2);padding:.75rem}
+      td:first-child{border-radius:4px 0 0 4px}td:last-child{border-radius:0 4px 4px 0}
+      tbody tr:hover td{background:var(--line)}
+      .card>.scroll,.card.scroll{padding:0 .6rem .3rem}
+      .nav.on{box-shadow:inset 3px 0 0 var(--acc)}
+      .kpi{display:flex;gap:.7rem;align-items:center;padding:.7rem .8rem}
+      .kic{width:34px;height:34px;display:grid;place-items:center;background:var(--bg2);border-radius:4px;flex:none}
+      .pill{position:relative;cursor:pointer;border-radius:4px}
+      .pill input[type=checkbox]{position:absolute;opacity:0;width:0;height:0}
+      .pill:has(input:checked){background:var(--btn);color:#fff;border-color:var(--btn)}
+      .pill:has(input:checked)::before{content:"\2713";font-weight:700}
+      .pill:has(input:focus-visible){outline:2px solid var(--acc)}
+      .chipx{display:inline-flex;margin-left:.3rem;padding:2px;border-radius:3px}.chipx:hover{background:rgba(255,255,255,.25)}.chipx .ic{width:14px;height:14px}
+      /* ===== v4 colors from reference: near-black + orange ===== */
+      :root,:root[data-theme="light"]{--sb:#1a1a1a;--sbtx:rgba(255,255,255,.7);--on:#3390ec;--onx:#fff;--hv:rgba(255,255,255,.07);--sbl:transparent;--bg:#f4f2ef;--bg2:#ece9e4;--card:#fff;--line:#ddd8d1;--ink:#1b1a19;--mut:#6d6862;--acc:#c9461a;--in:#faf9f7;--btn:#c9461a;--btnh:#ad3b15;--onbtn:#fff}
+      @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sb:#17212b;--sbtx:#7f91a4;--on:#3390ec;--onx:#fff;--hv:rgba(255,255,255,.06);--sbl:#0e1621;--bg:#0e1621;--bg2:#1e2c3a;--card:#17212b;--line:#243447;--ink:#f5f5f5;--mut:#7f91a4;--acc:#3390ec;--in:#0e1621;--btn:#3390ec;--btnh:#5aa9f2;--onbtn:#fff}}
+      :root[data-theme="dark"]{--sb:#17212b;--sbtx:#7f91a4;--on:#3390ec;--onx:#fff;--hv:rgba(255,255,255,.06);--sbl:#0e1621;--bg:#0e1621;--bg2:#1e2c3a;--card:#17212b;--line:#243447;--ink:#f5f5f5;--mut:#7f91a4;--acc:#3390ec;--in:#0e1621;--btn:#3390ec;--btnh:#5aa9f2;--onbtn:#fff}
+      .btn,.pill.sel,.pill:has(input:checked){color:var(--onbtn)!important}
+      /* ===== v5 light theme: clean blue, Telegram-like ===== */
+      :root,:root[data-theme="light"]{--sb:#2b5278;--sbh:#fff;--sbtx:rgba(255,255,255,.78);--on:#3390ec;--onx:#fff;--hv:rgba(255,255,255,.09);--sbl:transparent;--bg:#f1f3f5;--bg2:#f1f3f5;--card:#fff;--line:#e4e6e9;--ink:#17212b;--mut:#707579;--acc:#3390ec;--in:#f4f5f7;--btn:#3390ec;--btnh:#2b7fd0;--onbtn:#fff}
+      .tk{border:1px solid var(--line);background:var(--bg2);border-radius:4px;padding:.8rem;margin-bottom:.75rem}
+          .tg{display:grid;gap:.5rem;align-items:center}
+      @media (min-width:768px){.tg{grid-template-columns:32px minmax(0,1fr) minmax(0,1fr) auto}}
+      .inp.xs{min-height:36px;padding:.3rem .6rem;font-size:.9rem}
+      .b2.xs{min-height:32px;padding:.2rem .55rem;font-size:.85rem}
+      .vid{display:block;width:100%;height:auto;max-height:calc(100vh - 150px);max-height:calc(100dvh - 150px);object-fit:contain;background:#000;border-radius:var(--rad,4px)}
+      /* ===== v6: one video per week, supervisor next-video, student dock ===== */
+      .vtile{display:flex;align-items:center;gap:.5rem;width:100%;padding:.4rem .5rem .4rem .7rem;border:1px solid var(--line);background:var(--bg2);border-radius:var(--rad,4px)}
+      .vtile .vw{flex:1;text-align:left;font-weight:600;color:var(--acc);min-height:36px}
+      .vtile.add{justify-content:center;padding:.6rem;border-style:dashed;color:var(--acc);font-weight:600;min-height:48px}
+      .vtile.add:hover{border-color:var(--acc)}
+      .vbtn{display:inline-flex;align-items:center;gap:.4rem;min-height:40px;padding:.4rem .9rem;border-radius:var(--rad,4px)!important;background:var(--btn);color:#fff!important;font-weight:600;white-space:nowrap}
+      .vbtn.seen{background:transparent;color:var(--acc)!important;border:1px solid var(--acc)}
+      .nxv{white-space:nowrap}.nxv[disabled]{opacity:.45;cursor:not-allowed}
+      .dock{position:fixed;left:0;right:0;bottom:0;z-index:15;display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(0,0,0,.1)}
+      .dock>div{flex:1;min-width:0}.dock .vbtn{min-height:48px;padding:.5rem 1.2rem}
+      @media(min-width:1024px){.dock{left:16rem}}
+      .tw .wk{width:40px;height:40px}
+      .tsave{position:sticky;bottom:0;z-index:5;padding:1rem 0 calc(.75rem + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 40%)}
+      @media(min-width:1024px){.trg{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 296px minmax(0,1.1fr)}}
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div
+      id="toasts"
+      class="fixed right-3 z-50 flex flex-col gap-2"
+      style="bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px))"
+    ></div>
+    <script>
+      /* ===== icons (flat, stroke) ===== */
+      const IC = {
+        home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10"/>',
+        trk: '<path d="M3 3v18h18M7 14l4-4 4 4 5-6"/>',
+        fold: '<path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2z"/>',
+        users:
+          '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+        book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/>',
+        cal: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+        shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+        user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+        bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+        list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+        sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+        moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>',
+        out: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+        menu: '<path d="M3 6h18M3 12h18M3 18h18"/>',
+        plus: '<path d="M12 5v14M5 12h14"/>',
+        x: '<path d="M18 6 6 18M6 6l12 12"/>',
+        check: '<path d="M20 6 9 17l-5-5"/>',
+        dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
+        ul: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
+        task: '<path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+      };
+      IC.chev = '<path d="m6 9 6 6 6-6"/>';
+      IC.lock = '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
+      IC.cog = '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>';
+      IC.edit =
+        '<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>';
+      IC.trash =
+        '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/>';
+      const I = (n) =>
+        `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${IC[n]}</svg>`;
+      /* ===== data layer (localStorage; replace with API later) ===== */
+      const mkS = (n) => {
+          const m = {};
+          try {
+            const t = window[n];
+            t.setItem("__t", "1");
+            t.removeItem("__t");
+            return t;
+          } catch (e) {
+            return {
+              getItem: (k) => (k in m ? m[k] : null),
+              setItem: (k, v) => {
+                m[k] = String(v);
+              },
+              removeItem: (k) => {
+                delete m[k];
+              },
+            };
+          }
+        },
+        LS = mkS("localStorage"),
+        SS = mkS("sessionStorage");
+      const K = "tpm_v2",
+        SL = ["4:00 PM", "5:00 PM", "6:30 PM", "7:30 PM"],
+        DAYS = [
+          "Saturday",
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+        ],
+        TH = ["8:00 AM", "9:00 AM", "10:00 AM"],
+        SLD = (d) => (d === "Thursday" ? TH : SL),
+        MAXC = 23;
+      const seed = () => ({
+        users: [
+          {
+            id: 1,
+            name: "System Admin",
+            phone: "admin",
+            username: "admin",
+            password: "admin123",
+            role: "admin",
+          },
+          {
+            id: 2,
+            name: "Abdirisak Mohiadin",
+            phone: "0634000001",
+            username: "0634000001",
+            password: "1234",
+            role: "supervisor",
+          },
+          {
+            id: 3,
+            name: "Mahad Cabdi",
+            phone: "0634000002",
+            username: "0634000002",
+            password: "1234",
+            role: "theory",
+          },
+          {
+            id: 4,
+            name: "Hodan Yusuf",
+            phone: "0634000003",
+            username: "0634000003",
+            password: "1234",
+            role: "office",
+          },
+          {
+            id: 5,
+            name: "Farhan Osman",
+            phone: "0634000004",
+            username: "0634000004",
+            password: "1234",
+            role: "supervisor",
+          },
+        ],
+        classes: [
+          {
+            id: 1,
+            name: "IT-August-Abdikani-2026",
+            teacher: 3,
+            sup: 2,
+            day: "Saturday",
+            slot: "6:30 PM",
+            tasks: [
+              "Proposal",
+              "Chapter 1",
+              "Design",
+              "Database",
+              "Coding",
+              "Final report",
+            ],
+          },
+          {
+            id: 2,
+            name: "IT-Sept-Evening-2026",
+            teacher: 3,
+            sup: null,
+            day: null,
+            slot: null,
+            tasks: ["Task 1", "Task 2", "Task 3", "Task 4", "Task 5", "Task 6"],
+          },
+        ],
+        students: [
+          "Rayan Ahmed Hayd",
+          "Ayan Mohamed Hassan",
+          "Najma Mohamoud Mohamed",
+          "Farhan Abdi Osman",
+          "Khadra Ali Jama",
+          "Hodan Yusuf Ismail",
+          "Mahad Omar Ali",
+          "Sagal Warsame Nur",
+          "Ahmed Mohamed",
+          "Hussien Adam",
+        ].map((n, i) => ({
+          id: i + 1,
+          name: n,
+          cls: i < 6 || i > 7 ? 1 : 2,
+          phone: "063" + (4100000 + i * 137),
+        })),
+        projects: [
+          {
+            id: 1,
+            title: "Somaliland Restaurant",
+            cls: 1,
+            members: [1, 2, 3],
+            w: [1, 1, 1, 1, 1, 0],
+            status: "In Progress",
+          },
+          {
+            id: 2,
+            title: "Hiddo Store",
+            cls: 1,
+            members: [4, 5],
+            w: [1, 1, 1, 1, 1, 1],
+            status: "Completed",
+          },
+        ],
+        notes: [{ id: 1, to: "all", t: "Welcome to Thesis Hub", read: false }],
+        fb: [],
+      });
+      let DB =
+        (() => {
+          try {
+            return JSON.parse(LS.getItem(K) || "null");
+          } catch (e) {
+            return null;
+          }
+        })() || seed();
+      DB.classes.forEach((c) => {
+        if (c.sup && !c.day) c.day = "Saturday";
+        if (c.day === "Thursday" && !TH.includes(c.slot)) {
+          const i = SL.indexOf(c.slot);
+          if (i >= 0 && i < 3) c.slot = TH[i];
+          else {
+            c.sup = null;
+            c.day = null;
+            c.slot = null;
+          }
+        }
+        if (!c.sup) c.day = null;
+      });
+      DB.fb = DB.fb || [];
+      DB.bin = DB.bin || [];
+      DB.cfg = DB.cfg || {};
+      function sync() {
+        if (!DB.tpl) {
+          const c0 = DB.classes.find((c) => c.tasks && c.tasks.some((t, i) => t !== "Task " + (i + 1))) || DB.classes[0] || {},
+            vid = {};
+          DB.classes.forEach((c) => Object.keys(c.vid || {}).forEach((i) => { if (!vid[i]) vid[i] = c.vid[i]; }));
+          DB.tpl = { tasks: (c0.tasks || [1, 2, 3, 4, 5, 6].map((i) => "Task " + i)).slice(0, 6), parts: c0.parts || [[], [], [], [], [], []], vid };
+        }
+        DB.tpl.vid = DB.tpl.vid || {};
+        Object.keys(DB.tpl.vid).forEach((k) => { if (/b$/.test(k)) { const a = k.slice(0, -1); if (!DB.tpl.vid[a]) DB.tpl.vid[a] = DB.tpl.vid[k]; delete DB.tpl.vid[k]; } });
+        DB.classes.forEach((c) => { c.tasks = DB.tpl.tasks; c.parts = DB.tpl.parts; c.vid = DB.tpl.vid; });
+      }
+      sync();
+      /* ===== admin settings: name, color, corners, logo ===== */
+      const APP = () => (DB.cfg && DB.cfg.name) || "Thesis Hub";
+      const RADS = [["0", "Square"], ["4", "Slightly rounded"], ["8", "Rounded"], ["14", "Very rounded"]];
+      const SWS = ["#3390ec", "#c9461a", "#0f766e", "#7c3aed", "#d63a6a", "#16a34a", "#e8890c", "#1f2937"];
+      function cfgApply(c) {
+        c = c || DB.cfg || {};
+        const r = document.documentElement.style;
+        if (c.color) {
+          ["--acc", "--btn", "--on"].forEach((k) => r.setProperty(k, c.color));
+          r.setProperty("--btnh", "color-mix(in srgb, " + c.color + " 82%, #000)");
+        } else ["--acc", "--btn", "--on", "--btnh"].forEach((k) => r.removeProperty(k));
+        if (c.rad != null && c.rad !== "") r.setProperty("--rad", c.rad + "px");
+        else r.removeProperty("--rad");
+        document.title = (c.name || "Thesis Hub");
+      }
+      const logoH = (z) =>
+        DB.cfg && DB.cfg.logo
+          ? `<img src="${DB.cfg.logo}" alt="" style="width:${z}px;height:${z}px;object-fit:contain;border-radius:var(--rad,4px);flex:none">`
+          : `<span style="width:${z}px;height:${z}px;border-radius:var(--rad,4px);background:var(--on);color:var(--onx);display:grid;place-items:center;flex:none">${I("book")}</span>`;
+      let LAST = LS.getItem(K) || "";
+      const save = () => {
+        autoRel();
+        sync();
+        try {
+          const raw = JSON.stringify(DB);
+          LS.setItem(K, raw);
+          LAST = raw;
+        } catch (e) {}
+      };
+      const nid = (a) => Math.max(0, ...a.map((x) => x.id)) + 1;
+      /* ===== class finished -> free supervisor slot ===== */
+      const relCls = (c) => {
+        c.fsup = c.sup || c.fsup;
+        c.sup = null;
+        c.day = null;
+        c.slot = null;
+        c.fin = true;
+        c.finAt = Date.now();
+      };
+      function autoRel() {
+        DB.classes.forEach((c) => {
+          if (!c.sup) return;
+          const ps = DB.projects.filter(
+            (p) => p.cls === c.id && p.status !== "Rejected",
+          );
+          if (ps.length && ps.every((p) => p.status === "Completed")) {
+            const sp = c.sup;
+            relCls(c);
+            note(
+              "All groups of " +
+                c.name +
+                " are completed. The class was removed from your schedule and the slot is free.",
+              sp,
+            );
+            if (S.user && S.user.id == sp)
+              toast("All groups of " + c.name + " completed: removed from your schedule");
+          }
+        });
+      }
+      const S = {
+        user: (() => {
+          try {
+            return JSON.parse(SS.getItem("tpm_u"));
+          } catch (e) {
+            return null;
+          }
+        })(),
+        page: "dash",
+        q: "",
+        st: "",
+        cls: "",
+        tch: "",
+        sort: "id",
+        tab: "proj",
+        tp: "",
+        yr: "",
+        pj: "",
+        nav: false,
+        staged: null,
+        open: "",
+        cbq: "",
+        pn: {},
+        mo: "",
+        ec: null,
+        lf: null,
+        pd: false,
+      };
+      /* ===== helpers ===== */
+      const $ = (s) => document.querySelector(s),
+        esc = (t) =>
+          String(t == null ? "" : t).replace(
+            /[&<>"]/g,
+            (c) =>
+              ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+          );
+      const norm = (t) =>
+        t
+          .toLowerCase()
+          .replace(/management system|\bsystem\b|\bms\b/g, "")
+          .replace(/[^a-z0-9]/g, "");
+      const U = (id) => DB.users.find((u) => u.id == id),
+        C = (id) => DB.classes.find((c) => c.id == id),
+        St = (id) => DB.students.find((s) => s.id == id);
+      const un = (id) => (U(id) || {}).name || "Unassigned",
+        cn = (id) => (C(id) || {}).name || "-",
+        sn = (id) => (St(id) || {}).name || "?";
+      const R = () => S.user.role,
+        done = (p) => p.w.filter((x) => x === 1).length,
+        ACT = ["Pending", "Approved", "In Progress"];
+      const mgr = () => ["admin", "office"].includes(R());
+      const VC = () =>
+        DB.classes.filter(
+          (c) =>
+            mgr() ||
+            (R() === "theory" && c.teacher == S.user.id) ||
+            (R() === "supervisor" && c.sup == S.user.id),
+        );
+      const VP = () =>
+        DB.projects.filter((p) => VC().some((c) => c.id === p.cls));
+      const stat = (s) => {
+        const m = DB.projects.filter((p) => p.members.includes(s.id));
+        return m.some((p) => ACT.includes(p.status))
+          ? "In Project"
+          : m.some((p) => p.status === "Completed")
+            ? "Completed"
+            : m.some((p) => p.status === "Suspended")
+              ? "Stopped"
+              : "Not Assigned";
+      };
+      const free = (s) => ["Not Assigned", "Stopped"].includes(stat(s));
+      const lc = (a, b) =>
+        String(a).toLowerCase().includes(String(b).toLowerCase());
+      function toast(m, t = "ok") {
+        const d = document.createElement("div");
+        d.className = "card pop px-4 py-3";
+        d.style.borderLeft =
+          "4px solid " + { ok: "#3fbf7f", err: "#ef4444", warn: "#f08a24" }[t];
+        d.textContent = m;
+        $("#toasts").append(d);
+        setTimeout(() => d.remove(), 3200);
+      }
+      function note(t, to = "all") {
+        DB.notes.unshift({ id: nid(DB.notes), to, t, read: false });
+        save();
+      }
+      function setTheme() {
+        const r = document.documentElement,
+          d =
+            r.dataset.theme === "dark" ||
+            (!r.dataset.theme &&
+              matchMedia("(prefers-color-scheme:dark)").matches);
+        r.dataset.theme = d ? "light" : "dark";
+        try {
+          localStorage.setItem("tpm_th", r.dataset.theme);
+        } catch (e) {}
+      }
+      try {
+        const t = localStorage.getItem("tpm_th");
+        if (t) document.documentElement.dataset.theme = t;
+      } catch (e) {}
+      const isDark = () =>
+        document.documentElement.dataset.theme === "dark" ||
+        (!document.documentElement.dataset.theme &&
+          matchMedia("(prefers-color-scheme:dark)").matches);
+      const bd = (s) => {
+        const c =
+          {
+            Completed: "#3fbf7f",
+            "In Progress": "#3390ec",
+            Pending: "#f08a24",
+            Approved: "#d63a6a",
+            Suspended: "#ef4444",
+            Rejected: "#ef4444",
+            "Not Assigned": "#f08a24",
+            "In Project": "#3390ec",
+            Stopped: "#ef4444",
+          }[s] || "#9fa3b4";
+        return `<span class="badge" style="background:${c}26;color:${c}">${s}</span>`;
+      };
+      const cmb = (id, list, val, ph) =>
+        `<input id="${id}" data-f="${id === "fc" ? "cls" : id}" list="${id}l" class="inp" placeholder="${ph}" value="${esc(val)}" aria-label="${ph}"><datalist id="${id}l">${list.map((x) => `<option value="${esc(x)}">`).join("")}</datalist>`;
+      const sel = (id, f, opts, val) =>
+        `<select id="${id}" data-f="${f}" class="inp" aria-label="${f}">${opts.map(([v, l]) => `<option value="${esc(v)}" ${v == val ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
+      const cb = (k, o, v) => {
+        const cur = o.find((x) => String(x[0]) === String(v)) || o[0],
+          op = S.open === k,
+          l = o.filter((x) => lc(x[1], S.cbq));
+        return `<div class="cbx relative"><button type="button" class="inp flex items-center justify-between gap-2 text-left" style="${op ? "border-color:var(--acc);box-shadow:0 0 0 2px rgba(47,123,255,.25)" : ""}" data-a="cb" data-id="${k}" aria-haspopup="listbox" aria-expanded="${op}"><span class="truncate">${esc(cur[1])}</span><span style="display:flex;transition:transform .15s;${op ? "transform:rotate(180deg)" : ""}">${I("chev")}</span></button>${op ? `<div class="absolute left-0 right-0 mt-1 p-2 card" style="z-index:30"><input id="cbs" data-cs="1" class="inp mb-1" placeholder="Search..." value="${esc(S.cbq)}" autocomplete="off"><div class="overflow-y-auto" style="max-height:224px" role="listbox">${l.map((x) => `<button type="button" role="option" class="w-full text-left px-3 py-2 rounded-lg" style="${String(x[0]) === String(v) ? "color:var(--acc);font-weight:600" : ""}" data-a="pick" data-id="${k}" data-v="${esc(x[0])}">${esc(x[1])}</button>`).join("") || '<p class="mut text-sm px-3 py-2">No results</p>'}</div></div>` : ""}</div>`;
+      };
+      const act = (k, id) =>
+        `<button class="b2" data-a="e${k}" data-id="${id}" aria-label="Edit">${I("edit")}</button><button class="b2" data-a="d${k}" data-id="${id}" aria-label="Delete" style="color:#ef4444">${I("trash")}</button>`;
+      function fm(title, fs, ok) {
+        const o = document.createElement("div");
+        o.className =
+          "fixed inset-0 z-40 grid place-items-center p-3 bg-black/50";
+        o.innerHTML = `<form class="card p-5 w-full max-w-sm pop"><h2 class="font-bold mb-3">${esc(title)}</h2>${fs.map((f) => `<label class="block mb-3"><span class="mut text-sm">${esc(f.l)}</span>${f.o ? `<select name="${f.n}" class="inp mt-1">${f.o.map((x) => `<option value="${esc(x[0])}" ${String(x[0]) === String(f.v) ? "selected" : ""}>${esc(x[1])}</option>`).join("")}</select>` : `<input name="${f.n}" type="${f.t || "text"}" class="inp mt-1" value="${esc(f.v)}" ${f.r === 0 ? "" : "required"}>`}</label>`).join("")}<div class="flex gap-2"><button class="btn flex-1">Save</button><button type="button" class="b2" id="cx">Cancel</button></div></form>`;
+        document.body.append(o);
+        const f = o.querySelector("form");
+        o.onclick = (e) => {
+          if (e.target.id === "cx" || e.target === o) o.remove();
+        };
+        f.onsubmit = (e) => {
+          e.preventDefault();
+          const v = Object.fromEntries(
+            fs.map((x) => [x.n, f.elements[x.n].value.trim()]),
+          );
+          if (ok(v) !== false) {
+            o.remove();
+            save();
+            render();
+          }
+        };
+      }
+      function ask(m, fn, lb = "Delete") {
+        const o = document.createElement("div");
+        o.className =
+          "fixed inset-0 z-40 grid place-items-center p-3 bg-black/50";
+        o.innerHTML = `<div class="card p-5 w-full max-w-sm pop"><h2 class="font-bold mb-2">Are you sure?</h2><p class="mut mb-4">${esc(m)}</p><div class="flex gap-2"><button class="btn flex-1" style="background:#ef4444" id="ok">${esc(lb)}</button><button class="b2" id="cx">Cancel</button></div></div>`;
+        document.body.append(o);
+        o.onclick = (e) => {
+          if (e.target.id === "cx" || e.target === o) o.remove();
+          else if (e.target.closest("#ok")) {
+            o.remove();
+            fn();
+            save();
+            render();
+          }
+        };
+      }
+      const empty = (m) => `<div class="card p-10 text-center mut">${m}</div>`;
+      const sbar = (n, m) =>
+        `<div class="h-1.5 rounded-full mt-2" style="background:var(--line)"><div class="sbar h-1.5 rounded-full" style="width:${m ? (n / m) * 100 : 0}%;background:var(--acc)"></div></div>`;
+      /* ===== pagination ===== */
+      const PS = 10;
+      function pgn(k, arr, size = PS) {
+        const pages = Math.max(1, Math.ceil(arr.length / size));
+        const p = Math.min(Math.max(1, S.pn[k] || 1), pages);
+        S.pn[k] = p;
+        const rows = arr.slice((p - 1) * size, p * size);
+        if (arr.length <= size) return { rows, html: "" };
+        const nums = [];
+        for (let i = 1; i <= pages; i++) {
+          if (i === 1 || i === pages || Math.abs(i - p) <= 1) nums.push(i);
+          else if (nums[nums.length - 1] !== "…") nums.push("…");
+        }
+        const bt = (l, t, d, x) =>
+          `<button type="button" class="b2 justify-center" style="min-width:40px;${d ? "opacity:.4;cursor:default;" : ""}${x ? "background:var(--btn);color:#fff;border-color:var(--btn);" : ""}" ${d ? "disabled" : `data-a="pg" data-id="${k}:${t}"`} aria-label="${l}">${l.length > 3 ? l : l}</button>`;
+        const html = `<div class="flex items-center gap-2 flex-wrap justify-between p-3"><p class="mut text-sm">Showing ${(p - 1) * size + 1}-${Math.min(p * size, arr.length)} of ${arr.length}</p><nav class="flex gap-1 flex-wrap items-center" aria-label="Pagination">${bt("‹", p - 1, p <= 1)}${nums
+          .map((n) =>
+            n === "…"
+              ? '<span class="mut px-1">…</span>'
+              : bt(String(n), n, false, n === p),
+          )
+          .join("")}${bt("›", p + 1, p >= pages)}</nav></div>`;
+        return { rows, html };
+      }
+      const tbp = (h) =>
+        h ? `<div style="border-top:1px solid var(--line)">${h}</div>` : "";
+      const cdp = (h) => (h ? `<div class="card mt-3">${h}</div>` : "");
+      /* ===== login ===== */
+      const loginV =
+        () => `<main class="min-h-screen grid place-items-center p-4"><form id="lf" class="card p-6 w-full max-w-sm pop"><div class="mb-4">${logoH(48)}</div><h1 class="text-2xl font-bold">${esc(APP())}</h1><p class="mut mb-5">Username-ka waa taleefankaaga</p>
+<label class="block mb-3"><span class="mut text-sm">Username (phone)</span><input name="u" class="inp mt-1" autocomplete="username" required></label>
+<label class="block"><span class="mut text-sm">Password</span><input name="p" type="password" class="inp mt-1" autocomplete="current-password" required></label>
+<p id="er" class="text-red-500 text-sm min-h-6 my-1" role="alert"></p><button class="btn w-full">Sign in</button><button type="button" class="mut text-sm mt-3 underline w-full" data-a="fp">Forgot password?</button>
+<div class="mut text-sm mt-5 space-y-0.5"><p>0634000001 / 1234 (Supervisor)</p><p>0634000002 / 1234 (Theory teacher)</p><p>0634000003 / 1234 (Office)</p><p>0634100137 / 0137 (Student: phone / last 4 digits)</p></div></form></main>`;
+      /* ===== shell ===== */
+      const MENU = {
+        admin: ["dash", "trk", "tsk",
+          "proj",
+          "stu",
+          "cls",
+          "sch",
+          "usr",
+          "bin",
+          "not",
+        ],
+        office: [
+          "dash",
+          "trk",
+          "proj",
+          "stu",
+          "cls",
+          "sch",
+          "usr",
+          "not",
+        ],
+        theory: ["dash", "trk", "proj", "stu", "cls", "sch", "not"],
+        supervisor: ["dash", "trk", "tsk", "stu", "cls", "sch", "end", "not"],
+        student: ["por", "not"],
+      };
+      const PG = {
+        dash: ["Dashboard", "home"],
+        trk: ["Tracker", "trk"],
+        proj: ["Projects", "fold"],
+        stu: ["Students", "users"],
+        cls: ["Classes", "book"],
+        sch: ["Schedule", "cal"],
+        usr: ["Users", "user"],
+        not: ["Notifications", "bell"],
+        tsk: ["Tasks", "task"],
+        por: ["My project", "fold"],
+        end: ["Ended classes", "check"],
+        prof: ["Profile", "user"],
+        bin: ["Settings", "cog"],
+      };
+      const isC = (n) => typeof n.to === "string" && n.to[0] === "c";
+      const myN = () =>
+        DB.notes.filter(
+          (n) =>
+            ((n.to === "all" && R() !== "student") ||
+              n.to == S.user.id ||
+              (isC(n) &&
+                R() === "student" &&
+                n.to === "c" + (St(S.user.sid) || {}).cls)) &&
+            !(n.hd || []).includes(S.user.id),
+        );
+      const rd = (n) => (isC(n) ? (n.rd || []).includes(S.user.id) : n.read);
+      /* student default password = last 4 digits of phone */
+      const rpw = () => ["admin", "office", "supervisor"].includes(R());
+      const spw = (st) =>
+        st.pw || String(st.phone).replace(/\D/g, "").slice(-4);
+      const GR = [
+        ["Overview", ["dash", "not"]],
+        ["Work", ["trk", "proj", "tsk", "por", "stu"]],
+        ["Management", ["cls", "sch", "end", "usr", "bin"]],
+      ];
+      const navH = (u) =>
+        GR.map(([g, ks]) => {
+          const l = ks.filter((k) => MENU[R()].includes(k) || k === "prof");
+          return l.length
+            ? `<p class="sec">${g}</p>` +
+                l
+                  .map(
+                    (k) =>
+                      `<button class="nav ${S.page === k ? "on" : ""}" data-a="go" data-id="${k}">${I(PG[k][1])}${PG[k][0]}${k === "not" && u ? `<span class="ml-auto badge bg-red-500 text-white">${u}</span>` : ""}</button>`,
+                  )
+                  .join("")
+            : "";
+        }).join("");
+      function shell(b) {
+        const un_ = myN().filter((n) => !rd(n)).length,
+          uname = S.user.username || S.user.phone || "";
+        return `<div class="min-h-screen lg:flex">
+<div id="ov" data-a="nav" class="${S.nav ? "" : "hidden"} lg:hidden fixed inset-0 z-20 bg-black/40"></div>
+<aside class="${S.nav ? "" : "hidden"} lg:block fixed lg:sticky top-0 z-30 h-screen w-64 p-4 overflow-hidden" style="background:var(--sb);border-right:1px solid var(--sbl)">
+<div class="flex items-center gap-2 text-xl font-bold mb-6 min-w-0" style="color:var(--sbh)">${logoH(36)}<span class="truncate">${esc(APP())}</span></div>
+<nav class="space-y-0.5 overflow-y-auto" style="max-height:calc(100vh - 170px)">${navH(un_)}</nav>
+<div class="absolute left-0 right-0 bottom-0 p-4" style="padding-bottom:calc(1rem + env(safe-area-inset-bottom,0px));border-top:1px solid var(--sbl)"><button class="nav" data-a="out">${I("out")}Sign out</button></div></aside>
+<div class="flex-1 min-w-0 p-3 sm:p-6"><header class="sticky top-0 z-20 flex items-center gap-2 mb-6 pb-4 pt-3 -mt-3 -mx-3 px-3 sm:pt-6 sm:-mt-6 sm:-mx-6 sm:px-6" style="border-bottom:1px solid var(--line);background:var(--bg)"><button class="b2 lg:hidden" data-a="nav" aria-label="Menu">${I("menu")}</button><div class="flex-1 min-w-0"><p class="font-semibold truncate">${PG[S.page][0]}</p><p class="mut text-xs">${new Date().toDateString()}</p></div>
+<button class="b2" data-a="go" data-id="not" aria-label="Notifications">${I("bell")}${un_ ? `<span class="badge bg-red-500 text-white">${un_}</span>` : ""}</button>
+<button class="b2" data-a="theme" aria-label="Switch theme">${I(isDark() ? "sun" : "moon")}</button>
+<div class="pdx relative"><button class="flex items-center gap-2 pl-2 text-left" data-a="pd" aria-haspopup="menu" aria-expanded="${!!S.pd}" aria-label="Account menu">${av(S.user.name, me().photo, 40)}<div class="hidden sm:block leading-tight"><p class="font-semibold text-sm">${esc(S.user.name)}</p><p class="mut text-xs capitalize">${R() === "theory" ? "Theory teacher" : R()}</p></div>${I("chev")}</button>${S.pd ? `<div class="card absolute right-0 mt-2 p-2 w-56 pop" style="z-index:40" role="menu"><div class="px-3 py-2"><p class="font-semibold text-sm truncate">${esc(S.user.name)}</p><p class="mut text-xs">Username: <b>${esc(uname)}</b></p></div><button class="b2 w-full mb-1" data-a="go" data-id="prof">${I("user")}My profile</button><button class="b2 w-full" style="color:#ef4444" data-a="out">${I("out")}Sign out</button></div>` : ""}</div></header>${b}</div></div>`;
+      }
+      /* ===== dashboard ===== */
+      let CH = [];
+      function dash() {
+        const P = VP(),
+          Cs = VC(),
+          Ss = DB.students.filter((s) => Cs.some((c) => c.id === s.cls));
+        const k = [
+          ["Students", Ss.length, "users", "#3390ec"],
+          ["Classes", Cs.length, "book", "#e8b04a"],
+          ["Projects", P.length, "fold", "#d63a6a"],
+          [
+            "Completed",
+            P.filter((p) => p.status === "Completed").length,
+            "check",
+            "#3fbf7f",
+          ],
+          ["Without project", Ss.filter(free).length, "list", "#f08a24"],
+          [
+            "Supervisors",
+            DB.users.filter((u) => u.role === "supervisor").length,
+            "user",
+            "#ef4444",
+          ],
+        ];
+        return `<h1 class="text-xl font-bold mb-3">Dashboard</h1><div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 mb-3">${k.map(([l, v, i, c]) => `<div class="card kpi"><span class="kic" style="color:${c}">${I(i)}</span><div class="min-w-0"><p class="mut text-xs truncate">${l}</p><p class="text-xl font-bold leading-tight" data-n="${v}">0</p></div></div>`).join("")}</div>
+<div class="grid lg:grid-cols-3 gap-2 mb-3"><div class="card p-4"><h2 class="font-semibold mb-2">Projects by status</h2><div style="height:230px"><canvas id="c1"></canvas></div></div><div class="card p-4 lg:col-span-2"><h2 class="font-semibold mb-2">Students per class</h2><div style="height:230px"><canvas id="c2"></canvas></div></div></div>
+<div class="card"><h2 class="font-semibold p-4 pb-1">Latest projects</h2><div class="scroll"><table><thead><tr><th>Title</th><th>Class</th><th>Members</th><th>Status</th></tr></thead><tbody>${P.slice(-4).reverse().map((p) => `<tr><td class="font-medium">${esc(p.title)}</td><td>${esc(cn(p.cls))}</td><td>${p.members.map(sn).map(esc).join(", ")}</td><td>${bd(p.status)}</td></tr>`).join("") || '<tr><td colspan="4" class="mut">No projects yet.</td></tr>'}</tbody></table></div></div>`;
+      }
+      function charts() {
+        CH.forEach((c) => c.destroy());
+        CH = [];
+        if (!window.Chart || !$("#c1")) return;
+        const P = VP(),
+          Cs = VC(),
+          tc = isDark() ? "#9fa3b4" : "#62677f";
+        Chart.defaults.font.family = "DM Sans";
+        Chart.defaults.color = tc;
+        const ss = [
+          "Pending",
+          "Approved",
+          "In Progress",
+          "Completed",
+          "Suspended",
+        ];
+        CH.push(
+          new Chart($("#c1"), {
+            type: "doughnut",
+            data: {
+              labels: ss,
+              datasets: [
+                {
+                  data: ss.map((s) => P.filter((p) => p.status === s).length),
+                  backgroundColor: [
+                    "#f08a24",
+                    "#d63a6a",
+                    getComputedStyle(document.documentElement).getPropertyValue("--acc").trim() || "#3390ec",
+                    "#3fbf7f",
+                    "#ef4444",
+                  ],
+                  borderWidth: 0,
+                },
+              ],
+            },
+            options: {
+              maintainAspectRatio: false,
+              cutout: "68%",
+              plugins: { legend: { position: "bottom" } },
+            },
+          }),
+        );
+        CH.push(
+          new Chart($("#c2"), {
+            type: "bar",
+            data: {
+              labels: Cs.map((c) => c.name),
+              datasets: [
+                {
+                  data: Cs.map(
+                    (c) => DB.students.filter((s) => s.cls === c.id).length,
+                  ),
+                  backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--acc").trim() || "#3390ec",
+                  borderRadius: 2,
+                },
+              ],
+            },
+            options: {
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true, ticks: { precision: 0 } },
+              },
+            },
+          }),
+        );
+        document.querySelectorAll("[data-n]").forEach((e) => {
+          const t = +e.dataset.n,
+            s = performance.now();
+          (function f(n) {
+            const p = Math.min(1, (n - s) / 600);
+            e.textContent = Math.round(t * p);
+            if (p < 1) requestAnimationFrame(f);
+          })(s);
+        });
+      }
+      /* ===== project filtering ===== */
+      function FP(o) {
+        o = o || S;
+        let L = VP().filter(
+          (p) =>
+            (!o.st || p.status === o.st) &&
+            (!o.cls || lc(cn(p.cls), o.cls)) &&
+            (!o.tch || C(p.cls).teacher == o.tch) &&
+            (!o.q || lc(p.title + p.members.map(sn).join(" "), o.q)),
+        );
+        return L.sort((a, b) =>
+          o.sort === "title"
+            ? a.title.localeCompare(b.title)
+            : o.sort === "prog"
+              ? done(b) - done(a)
+              : a.id - b.id,
+        );
+      }
+      const tchOpts = () => [
+        ["", "All teachers"],
+        ...DB.users
+          .filter((u) => u.role === "theory")
+          .map((u) => [u.id, u.name]),
+      ];
+      const stOpts = [
+        ["", "All statuses"],
+        ...[
+          "Pending",
+          "Approved",
+          "In Progress",
+          "Completed",
+          "Suspended",
+          "Rejected",
+        ].map((s) => [s, s]),
+      ];
+      const filt = (o = {}) =>
+        `<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-4"><input id="q" data-f="q" class="inp lg:col-span-1" placeholder="Search title or student..." value="${esc(S.q)}" aria-label="Search">${cb("cls", [["", "All classes"], ...VC().map((c) => [c.name, c.name])], S.cls)}${o.noSt ? "" : cb("st", stOpts, S.st)}${
+          mgr()
+            ? cb("tch", tchOpts(), S.tch)
+            : cb(
+                "sort",
+                [
+                  ["id", "Sort: Group #"],
+                  ["title", "Sort: Title"],
+                  ["prog", "Sort: Progress"],
+                ],
+                S.sort,
+              )
+        }</div>`;
+      /* ===== tracker: only supervisor edits ===== */
+      function trk() {
+        const L = S.lf ? FP(S.lf) : [],
+          pp = pgn("tr", L);
+        return `<div class="flex items-end gap-3 mb-4 flex-wrap"><div class="flex-1"><h1 class="text-2xl font-bold">Tracker</h1><p class="mut text-sm">${R() === "supervisor" ? "You can update progress" : "View only"}${R() === "admin" ? " (admin can edit)" : ""}</p></div>${mgr() ? `<button class="btn" data-a="exp">${I("dl")}Export Excel</button>` : ""}</div>${filt()}<div class="flex gap-2 mb-4 flex-wrap"><button class="btn" data-a="ld">${I("trk")}Load tracker</button>${S.lf ? '<button class="b2" data-a="unl">Clear</button>' : ""}</div>
+<div class="hidden lg:block mb-3"><div class="card px-4 py-3 trg mut text-sm font-semibold"><span>Title</span><span>Members</span><span class="flex gap-1.5">${[1, 2, 3, 4, 5, 6].map((i) => `<span class="w-9 text-center">W${i}</span>`).join("")}<span class="w-9 text-center">Total</span></span><span>Status</span></div></div>
+<div class="space-y-3">${
+          pp.rows.map((p) => {
+            const c = C(p.cls),
+              ed =
+                (R() === "supervisor" && c.sup == S.user.id) || R() === "admin",
+              stp = ed || (R() === "theory" && c.teacher == S.user.id);
+            return `<article class="card lift p-4 trg items-center"><div><p class="text-xs font-semibold" style="color:var(--acc)">Group ${p.id} · ${esc(c.name)}</p><p class="font-bold text-lg">${esc(p.title)}</p>${sbar(done(p), 6)}</div>
+<ol class="text-sm">${p.members.map((m, i) => `<li>${i + 1}. ${esc(sn(m))}</li>`).join("")}</ol>
+<div class="flex gap-1.5 items-center flex-wrap">${p.w.map((v, i) => `<button class="wk w${v === null ? "n" : v}" title="${esc(c.tasks[i])}" ${ed ? `data-a="w" data-id="${p.id},${i}"` : "disabled"}>${v === 1 ? "✓" : v === 0 ? "✕" : "W" + (i + 1)}</button>`).join("")}<b class="w-9 h-9 grid place-items-center rounded-lg" style="background:var(--bg2)">${done(p)}</b></div>
+<div class="flex items-center gap-2 flex-wrap">${bd(p.status)}${nxv(c, p)}${ed && ACT.includes(p.status) ? `<button class="b2" data-a="done" data-id="${p.id}">Complete</button>` : ""}${stp && p.status !== "Completed" ? `<button class="b2" data-a="stop" data-id="${p.id}">${p.status === "Suspended" ? "Resume" : "Stop"}</button>` : ""}${ed ? `<button class="b2" data-a="fbk" data-id="${p.id}">${I("list")}Notes${DB.fb.filter((x) => x.pid === p.id).length ? " (" + DB.fb.filter((x) => x.pid === p.id).length + ")" : ""}</button>` : ""}</div></article>`;
+          }).join("") || empty(S.lf ? "No projects match these filters." : "Choose a class or filters, then press Load tracker.")
+        }</div>${cdp(pp.html)}`;
+      }
+      /* ===== projects ===== */
+      function proj() {
+        const wo = DB.students.filter(
+          (s) =>
+            VC().some((c) => c.id === s.cls) &&
+            free(s) &&
+            (!S.cls || lc(cn(s.cls), S.cls)) &&
+            (!S.tch || C(s.cls).teacher == S.tch) &&
+            (!S.q || lc(s.name, S.q)),
+        );
+        const apr = DB.projects.filter((p) => p.status === "Pending").length,
+          pw = pgn("wo", wo),
+          pl = pgn("pl", FP());
+        return `<div class="flex items-center gap-2 mb-4 flex-wrap"><h1 class="text-2xl font-bold flex-1">Projects</h1>${mgr() && apr ? `<button class="b2" data-a="apr">${I("check")}Approve all (${apr})</button>` : ""}${R() !== "supervisor" ? `<button class="btn sm" data-a="new">${I("plus")}New project</button>` : ""}</div>
+<div class="flex gap-2 mb-3">${[
+          ["proj", "Project list"],
+          ["wo", "Without project"],
+        ]
+          .map(
+            ([k, l]) =>
+              `<button class="pill ${S.tab === k ? "sel" : ""}" data-a="tab" data-id="${k}">${l}</button>`,
+          )
+          .join("")}</div>${filt({ noSt: S.tab === "wo" })}
+${
+  S.tab === "wo"
+    ? `<div class="card"><div class="scroll"><table><thead><tr><th>Student</th><th>Class</th><th>Teacher</th><th></th></tr></thead><tbody>${pw.rows.map((s) => `<tr><td>${esc(s.name)}</td><td>${esc(cn(s.cls))}</td><td>${esc(un(C(s.cls).teacher))}</td><td class="text-right"><div class="flex gap-2 justify-end">${R() !== "supervisor" ? act("s", s.id) : ""}</div></td></tr>`).join("") || '<tr><td colspan=3 class="mut p-6">Every student has a project.</td></tr>'}</tbody></table></div>${tbp(pw.html)}</div>`
+    : `<div class="card"><div class="scroll"><table><thead><tr><th>Title</th><th>Class</th><th>Members</th><th>Status</th><th></th></tr></thead><tbody>${
+        pl.rows
+          .map(
+            (p) =>
+              `<tr><td class="font-medium">${esc(p.title)}</td><td>${esc(cn(p.cls))}</td><td>${p.members.map(sn).map(esc).join(", ")}</td><td>${bd(p.status)}</td><td class="text-right"><div class="flex gap-2 justify-end">${R() !== "supervisor" ? act("p", p.id) : ""}</div></td></tr>`,
+          )
+          .join("") ||
+        '<tr><td colspan=4 class="mut p-6">No projects yet.</td></tr>'
+      }</tbody></table></div>${tbp(pl.html)}</div>`
+}`;
+      }
+      function newProj() {
+        const o = document.createElement("div");
+        o.className =
+          "fixed inset-0 z-40 grid place-items-center p-3 bg-black/50";
+        let mem = [],
+          okT = false;
+        o.innerHTML = `<form class="card p-5 w-full max-w-md pop max-h-[92vh] overflow-y-auto"><div class="flex items-center mb-3"><h2 class="text-lg font-bold flex-1">New project</h2><button type="button" id="cx" class="b2" aria-label="Close">${I("x")}</button></div>
+<label class="block mb-1"><span class="mut text-sm">Title</span><input name="t" class="inp mt-1" autocomplete="off" required></label><p id="tm" class="text-sm min-h-6 mb-2"></p>
+<label class="block mb-3"><span class="mut text-sm">Class</span><select name="c" class="inp mt-1" required><option value="">Search class...</option>${VC()
+          .map((c) => `<option value="${esc(c.name)}">${esc(c.name)}</option>`)
+          .join("")}</select></label>
+<p class="mut text-sm mb-1">Members (max 3)</p><div id="ch" class="flex flex-wrap gap-2 mb-2 min-h-8"></div><input name="s" class="inp mb-2" placeholder="Search student..." autocomplete="off"><div id="sl" class="flex flex-wrap gap-2 mb-2 max-h-32 overflow-y-auto"></div><p id="me" class="text-red-500 text-sm min-h-5" role="alert"></p>
+<div class="flex gap-2"><button class="btn flex-1">Create project</button><button type="button" class="b2" id="cx">Cancel</button></div></form>`;
+        document.body.append(o);
+        const f = o.querySelector("form");
+        const draw = () => {
+          const c = VC().find((x) => x.name === f.c.value.trim());
+          o.querySelector("#ch").innerHTML =
+            mem
+              .map(
+                (id) =>
+                  `<span class="pill sel">${esc(sn(id))}<button type="button" data-r="${id}" aria-label="Remove">${I("x")}</button></span>`,
+              )
+              .join("") || '<span class="mut text-sm">No students added</span>';
+          o.querySelector("#sl").innerHTML = c
+            ? DB.students
+                .filter(
+                  (s) =>
+                    s.cls === c.id &&
+                    free(s) &&
+                    !mem.includes(s.id) &&
+                    lc(s.name, f.s.value),
+                )
+                .map(
+                  (s) =>
+                    `<button type="button" class="pill" data-s="${s.id}">${I("plus")}${esc(s.name)}</button>`,
+                )
+                .join("") ||
+              '<span class="mut text-sm">No available students</span>'
+            : '<span class="mut text-sm">Choose a class first</span>';
+        };
+        draw();
+        f.t.oninput = () => {
+          const t = f.t.value.trim(),
+            d =
+              t &&
+              DB.projects.find(
+                (p) => p.status !== "Rejected" && norm(p.title) === norm(t),
+              ),
+            m = o.querySelector("#tm");
+          okT = !!t && !d;
+          m.className =
+            "text-sm min-h-6 mb-2 " + (d ? "text-red-500" : "text-green-500");
+          m.textContent = !t
+            ? ""
+            : d
+              ? "another one exist named " + d.title
+              : "Title is available ✓";
+        };
+        f.c.onchange = () => {
+          mem = [];
+          draw();
+        };
+        f.s.oninput = draw;
+        o.onclick = (e) => {
+          if (e.target.closest("#cx") || e.target === o) return o.remove();
+          const a = e.target.closest("[data-s]"),
+            r = e.target.closest("[data-r]");
+          if (a) {
+            if (mem.length >= 3)
+              return (o.querySelector("#me").textContent =
+                "A group can have at most 3 students.");
+            mem.push(+a.dataset.s);
+            draw();
+          }
+          if (r) {
+            mem = mem.filter((x) => x != r.dataset.r);
+            draw();
+          }
+        };
+        f.onsubmit = (e) => {
+          e.preventDefault();
+          const c = VC().find((x) => x.name === f.c.value.trim()),
+            er = o.querySelector("#me");
+          if (!okT) return (er.textContent = "Fix the title first.");
+          if (!c) return (er.textContent = "Pick a class from the list.");
+          if (!mem.length) return (er.textContent = "Add at least 1 student.");
+          DB.projects.push({
+            id: nid(DB.projects),
+            title: f.t.value.trim(),
+            cls: c.id,
+            members: mem,
+            w: [null, null, null, null, null, null],
+            status: "Pending",
+          });
+          if (c.sup)
+            note("New group in " + c.name + ": " + f.t.value.trim(), c.sup);
+          save();
+          o.remove();
+          toast("Project created");
+          render();
+        };
+      }
+      /* ===== students ===== */
+      function stu() {
+        let L = DB.students.filter(
+          (s) =>
+            VC().some((c) => c.id === s.cls) &&
+            (!S.cls || lc(cn(s.cls), S.cls)) &&
+            (!S.st || stat(s) === S.st) &&
+            (!S.q || lc(s.name + s.phone, S.q)),
+        );
+        const can = mgr() || R() === "theory",
+          ps = pgn("st", L);
+        return `<div class="flex items-center gap-2 mb-4 flex-wrap"><h1 class="text-2xl font-bold flex-1">Students</h1>${can ? `<label class="btn cursor-pointer">${I("ul")}Import Excel<input type="file" id="imp" accept=".xlsx,.xls,.csv" class="hidden"></label><button class="b2" data-a="tpl">Template</button>` : ""}<button class="b2" data-a="exps">${I("dl")}Export</button></div>${R() === "supervisor" ? '<p class="mut text-sm mb-3">Tell each student their phone number: it is their username. First password = last 4 digits of that number. They must add an email and change it on first login. If a student forgets the password, press Reset password to return it to the last 4 digits.</p>' : ""}
+${
+  can
+    ? `<form id="sf" class="card p-3 mb-4 grid sm:grid-cols-4 gap-2"><input name="n" class="inp" placeholder="Student name" required><input name="p" class="inp" placeholder="Phone" required><select name="c" class="inp" required><option value="">Class</option>${VC()
+        .map((c) => `<option value="${esc(c.name)}">${esc(c.name)}</option>`)
+        .join(
+          "",
+        )}</select><button class="btn">${I("plus")}Add student</button></form>`
+    : ""
+}
+<div class="grid sm:grid-cols-3 gap-2 mb-4"><input id="q" data-f="q" class="inp" placeholder="Search name or phone..." value="${esc(S.q)}">${cb("cls", [["", "All classes"], ...VC().map((c) => [c.name, c.name])], S.cls)}${cb(
+          "st",
+          [
+            ["", "All status"],
+            ["Not Assigned", "Not assigned"],
+            ["In Project", "In project"],
+            ["Completed", "Completed"],
+            ["Stopped", "Stopped"],
+          ],
+          S.st,
+        )}</div>
+${S.staged ? prev() : ""}<div class="card"><div class="scroll"><table><thead><tr><th>Name</th><th>Class</th><th>Phone</th><th>Status</th><th></th></tr></thead><tbody>${ps.rows.map((s) => `<tr><td>${esc(s.name)}</td><td>${esc(cn(s.cls))}</td><td>${esc(s.phone)}</td><td>${bd(stat(s))}</td><td class="text-right"><div class="flex gap-2 justify-end">${rpw() ? `<button class="b2" data-a="spr" data-id="${s.id}" title="Reset password to default (last 4 digits)">${I("lock")}Reset password</button>` : ""}${can ? act("s", s.id) : ""}</div></td></tr>`).join("") || '<tr><td colspan=4 class="mut p-6">No students found.</td></tr>'}</tbody></table></div>${tbp(ps.html)}</div>`;
+      }
+      const prev = () => {
+        const g = S.staged,
+          ok = g.rows.filter((r) => !r.err).length,
+          vp = pgn("pv", g.rows);
+        return `<div class="card p-4 mb-4 pop"><h2 class="font-semibold">Preview: ${esc(g.cls || "no class")} ${g.isNew ? "(new class)" : ""}</h2><p class="mut text-sm mb-2">${ok} valid, ${g.rows.length - ok} with problems</p><div class="scroll" style="max-height:240px"><table>${vp.rows.map((r) => `<tr><td>${esc(r.Name)}</td><td>${esc(r.Phone)}</td><td class="${r.err ? "text-red-500" : "text-green-500"}">${r.err || "OK"}</td></tr>`).join("")}</table></div>${vp.html}<div class="flex gap-2 mt-3"><button class="btn" data-a="ok">Save ${ok} students</button><button class="b2" data-a="no">Cancel</button></div></div>`;
+      };
+      function stage(file) {
+        const r = new FileReader();
+        r.onload = (e) => {
+          try {
+            const w = XLSX.read(e.target.result, { type: "array" }),
+              rows = XLSX.utils.sheet_to_json(w.Sheets[w.SheetNames[0]], {
+                defval: "",
+              }),
+              cls =
+                [
+                  ...new Set(
+                    rows
+                      .map((x) => String(x.Class || "").trim())
+                      .filter(Boolean),
+                  ),
+                ][0] || "",
+              seen = new Set(DB.students.map((s) => s.phone));
+            rows.forEach((x) => {
+              x.Phone = String(x.Phone || "").trim();
+              x.err = !x.Name
+                ? "Missing name"
+                : !x.Phone
+                  ? "Missing phone"
+                  : seen.has(x.Phone)
+                    ? "Duplicate phone"
+                    : "";
+              if (!x.err) seen.add(x.Phone);
+            });
+            S.pn.pv = 1;
+            S.staged = {
+              cls,
+              rows,
+              isNew: !DB.classes.some((c) => c.name === cls),
+            };
+            render();
+          } catch (x) {
+            toast("Could not read that file", "err");
+          }
+        };
+        r.readAsArrayBuffer(file);
+      }
+      function commit() {
+        const g = S.staged;
+        if (!g.cls) return toast("No class name in file", "err");
+        let c = DB.classes.find((c) => c.name === g.cls);
+        if (!c) {
+          c = {
+            id: nid(DB.classes),
+            name: g.cls,
+            teacher: R() === "theory" ? S.user.id : null,
+            sup: null,
+            day: null,
+            slot: null,
+            tasks: [1, 2, 3, 4, 5, 6].map((i) => "Task " + i),
+          };
+          DB.classes.push(c);
+        }
+        let n = 0;
+        g.rows
+          .filter((r) => !r.err)
+          .forEach((r) => {
+            DB.students.push({
+              id: nid(DB.students),
+              name: r.Name,
+              cls: c.id,
+              phone: r.Phone,
+            });
+            n++;
+          });
+        save();
+        S.staged = null;
+        toast(n + " students saved to " + c.name);
+        render();
+      }
+      /* ===== classes + assignment ===== */
+      const cyr = (c) => (String(c.name).match(/(?:19|20)\d\d/) || [""])[0];
+      function cls() {
+        const can = mgr() || R() === "theory";
+        const L = VC().filter(
+          (c) =>
+            (!S.q || lc(c.name, S.q)) &&
+            (S.tp === "" || (S.tp === "un" ? !c.sup : !!c.sup)) &&
+            (!S.tch || c.teacher == S.tch) &&
+            (!S.yr || cyr(c) === S.yr) &&
+            (!S.pj ||
+              (S.pj === "with") === DB.projects.some((p) => p.cls === c.id)),
+        );
+        const yrs = [...new Set(VC().map(cyr).filter(Boolean))].sort();
+        return `<div class="flex items-center mb-4"><h1 class="text-2xl font-bold flex-1">Classes</h1></div>${
+          can
+            ? `<form id="cf" class="card p-3 mb-4 grid sm:grid-cols-3 gap-2"><input name="n" class="inp" placeholder="Unique class name" required>${
+                mgr()
+                  ? `<select name="t" class="inp">${DB.users
+                      .filter((u) => u.role === "theory")
+                      .map(
+                        (u) =>
+                          `<option value="${u.id}">${esc(u.name)}</option>`,
+                      )
+                      .join("")}</select>`
+                  : '<input class="inp" disabled value="You are the teacher">'
+              }<button class="btn">${I("plus")}Add class</button></form>`
+            : ""
+        }
+<div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-4"><input id="q" data-f="q" class="inp" placeholder="Search class..." value="${esc(S.q)}">${cb(
+          "tp",
+          [
+            ["", "All classes"],
+            ["as", "Assigned to supervisor"],
+            ["un", "Unassigned"],
+          ],
+          S.tp,
+        )}${cb("tch", tchOpts(), S.tch)}${cb("yr", [["", "All years"], ...yrs.map((y) => [y, y])], S.yr)}${cb(
+          "pj",
+          [
+            ["", "All"],
+            ["with", "With project"],
+            ["without", "Without project"],
+          ],
+          S.pj,
+        )}</div>
+<div class="grid md:grid-cols-2 gap-3">${L.map((c) => `<div class="card lift p-4"><p class="font-bold">${esc(c.name)}</p><p class="mut text-sm">${DB.students.filter((s) => s.cls === c.id).length} students · Teacher: ${esc(un(c.teacher))}</p><p class="text-sm mt-1">${c.sup ? `Supervisor: <b>${esc(un(c.sup))}</b> · ${c.day} at ${c.slot}` : (c.fin ? '<span class="text-green-500">Finished: schedule slot released</span>' : '<span class="text-amber-500">No supervisor yet</span>')}</p>${R() === "supervisor" && c.sup == S.user.id ? `<div class="flex gap-2 mt-3"><button class="b2" data-a="fin" data-id="${c.id}">${I("check")}Finish class (6 weeks done)</button></div>` : ""}${can && (mgr() || c.teacher == S.user.id) ? `<div class="flex gap-2 mt-3"><button class="b2" data-a="sup" data-id="${c.id}">${c.sup ? "Change" : "Assign supervisor"}</button>${c.sup ? `<button class="b2" data-a="unsup" data-id="${c.id}">Unassign</button>` : ""}<span class="ml-auto flex gap-2">${act("c", c.id)}</span></div>` : ""}</div>`).join("") || empty("No classes yet.")}</div>`;
+      }
+      function supModal(id) {
+        const c = C(id),
+          o = document.createElement("div");
+        o.className =
+          "fixed inset-0 z-40 grid place-items-center p-3 bg-black/50";
+        const sups = DB.users.filter((u) => u.role === "supervisor");
+        const taken = (s) =>
+          DB.classes
+            .filter((x) => x.sup == s && x.id !== id && x.day)
+            .map((x) => x.day + "|" + x.slot);
+        const free = (s, d) =>
+          SLD(d).filter((t) => !taken(s).includes(d + "|" + t));
+        o.innerHTML = `<form class="card p-5 w-full max-w-sm pop"><h2 class="font-bold mb-3">Assign supervisor</h2><p class="mut text-sm mb-3">${esc(c.name)}</p><label class="block mb-3"><span class="mut text-sm">Supervisor</span><select name="s" class="inp mt-1">${sups.map((u) => `<option value="${u.id}" ${u.id == c.sup ? "selected" : ""}>${esc(u.name)} (${taken(u.id).length}/${MAXC} used)</option>`).join("")}</select></label><label class="block mb-3"><span class="mut text-sm">Day (one day per week)</span><select name="d" class="inp mt-1"></select></label><label class="block mb-3"><span class="mut text-sm">Time (one hour, one class per slot)</span><select name="t" class="inp mt-1"></select></label><div class="flex gap-2"><button class="btn flex-1">Assign</button><button type="button" class="b2" id="cx">Cancel</button></div></form>`;
+        document.body.append(o);
+        const f = o.querySelector("form");
+        const ft = () => {
+          const fr = f.d.value ? free(+f.s.value, f.d.value) : [];
+          f.t.innerHTML =
+            fr
+              .map(
+                (x) =>
+                  `<option ${x === c.slot ? "selected" : ""}>${x}</option>`,
+              )
+              .join("") || '<option value="">No free time</option>';
+        };
+        const fd = () => {
+          const ds = DAYS.filter((d) => free(+f.s.value, d).length);
+          f.d.innerHTML =
+            ds
+              .map(
+                (d) => `<option ${d === c.day ? "selected" : ""}>${d}</option>`,
+              )
+              .join("") || '<option value="">Supervisor is full</option>';
+          ft();
+        };
+        fd();
+        f.s.onchange = fd;
+        f.d.onchange = ft;
+        o.onclick = (e) => {
+          if (e.target.id === "cx" || e.target === o) o.remove();
+        };
+        f.onsubmit = (e) => {
+          e.preventDefault();
+          if (!f.d.value || !f.t.value)
+            return toast("That supervisor has no free slot", "err");
+          if (taken(+f.s.value).includes(f.d.value + "|" + f.t.value))
+            return toast("That slot is already taken", "err");
+          c.sup = +f.s.value;
+          c.fin = false;
+          c.day = f.d.value;
+          c.slot = f.t.value;
+          note(
+            `You were assigned ${c.name} on ${c.day} at ${c.slot} by ${S.user.name} (${new Date().toLocaleString()})`,
+            c.sup,
+          );
+          save();
+          o.remove();
+          toast("Supervisor assigned");
+          render();
+        };
+      }
+      /* ===== schedule ===== */
+      function sch() {
+        const sups = DB.users.filter(
+          (u) =>
+            u.role === "supervisor" &&
+            (R() !== "supervisor" || u.id == S.user.id),
+        );
+        const sp = pgn("sc", sups, 3);
+        return `<h1 class="text-2xl font-bold mb-1">Supervisor schedule</h1><p class="mut mb-4">Saturday to Wednesday 4:00 PM to 7:30 PM; Thursday 8:00 AM to 10:00 AM (3 classes). Each class has one day and one hour a week. Max ${MAXC} classes.</p><div class="space-y-4">${sp.rows
+          .map(
+            (u) =>
+              `<div class="card scroll"><p class="font-semibold p-3 pb-0">${esc(u.name)} <span class="mut text-sm font-normal">${DB.classes.filter((x) => x.sup == u.id).length}/${MAXC} used</span></p><table><thead><tr><th>Day</th>${SL.map((s) => `<th>${s}</th>`).join("")}</tr></thead><tbody>${DAYS.map(
+                (d) => {
+                  const cell = (s) => {
+                    const c = DB.classes.find(
+                      (x) => x.sup == u.id && x.day === d && x.slot === s,
+                    );
+                    return c
+                      ? `<span class="pill sel" style="padding:.15rem .3rem .15rem .6rem;font-size:.85rem">${esc(c.name)}${R() === "supervisor" && u.id == S.user.id ? `<button type="button" class="chipx" data-a="fin" data-id="${c.id}" title="Finish class" aria-label="Finish class">${I("x")}</button>` : ""}</span>`
+                      : '<span class="mut">Free</span>';
+                  };
+                  return `<tr><td class="font-medium">${d}</td>${d === "Thursday" ? `<td colspan="${SL.length}"><div class="flex gap-6 flex-wrap">${TH.map((s) => `<span><span class="mut text-sm">${s}</span> ${cell(s)}</span>`).join("")}</div></td>` : SL.map((s) => `<td>${cell(s)}</td>`).join("")}</tr>`;
+                },
+              ).join("")}</tbody></table></div>`,
+          )
+          .join("")}</div>${cdp(sp.html)}`;
+      }
+      /* ===== tasks (supervisor) ===== */
+      function tsk() {
+        const c0 = DB.classes[0];
+        if (!c0) return empty("Add a class first, then prepare the weekly tasks here.");
+        const nv = DB.tpl.tasks.filter((_, i) => vhas(c0, i, 0)).length;
+        return `<div class="mb-4"><h1 class="text-2xl font-bold">Weekly tasks</h1><p class="mut text-sm mt-1 max-w-xl">Set the 6 weeks once; they apply to every class. Each week has one video (${nv}/6 added). A group sees W1 first, and the next week opens when you approve (✓) the previous one.</p></div><form class="max-w-4xl" data-id="${c0.id}"><div class="grid md:grid-cols-2 gap-3">${DB.tpl.tasks.map((t, i) => `<section class="card tw p-4"><div class="flex items-center gap-3 mb-3"><span class="wk wn">W${i + 1}</span><input name="t${i}" class="inp" value="${esc(t)}" aria-label="Task for week ${i + 1}" placeholder="Task" required></div><label class="block mb-3"><span class="mut text-xs">Parts (separate with commas)</span><input name="p${i}" class="inp mt-1" placeholder="Chapter 1, Chapter 2" value="${esc(pts(c0, i).join(", "))}" aria-label="Parts of week ${i + 1}"></label>${vbs(c0, i)}</section>`).join("")}</div><div class="tsave"><button class="btn w-full">Save tasks</button></div></form>`;
+      }
+      /* ===== users ===== */
+      function usr() {
+        const L = DB.users.filter(
+            (u) =>
+              u.role !== "admin" &&
+              (!S.q || lc(u.name + u.phone + (u.email || ""), S.q)) &&
+              (!S.st || u.role === S.st),
+          ),
+          TL = {
+            supervisor: "Supervisor",
+            theory: "Theory teacher",
+            office: "Office",
+          };
+        const up = pgn("us", L);
+        return `<h1 class="text-2xl font-bold mb-4">Users</h1><form id="uf" class="card p-3 mb-4 grid sm:grid-cols-2 lg:grid-cols-6 gap-2"><input name="n" class="inp" placeholder="Name" required><input name="p" class="inp" placeholder="Phone (username)" required><input name="e" type="email" class="inp" placeholder="Email" required><select name="r" class="inp">${Object.entries(
+          TL,
+        )
+          .map(([k, v]) => `<option value="${k}">${v}</option>`)
+          .join(
+            "",
+          )}</select><input name="w" class="inp" placeholder="Password" required><button class="btn">${I("plus")}Add teacher</button></form>
+<div class="grid sm:grid-cols-2 gap-2 mb-4"><input id="q" data-f="q" class="inp" placeholder="Search name or phone..." value="${esc(S.q)}">${cb("st", [["", "All types"], ...Object.entries(TL)], S.st)}</div>
+<div class="card"><div class="scroll"><table><thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Type</th><th></th></tr></thead><tbody>${up.rows.map((u) => `<tr><td>${esc(u.name)}</td><td>${esc(u.username)}</td><td>${esc(u.email || "-")}</td><td>${TL[u.role]}</td><td class="text-right whitespace-nowrap"><div class="flex gap-2 justify-end"><button class="b2" data-a="pw" data-id="${u.id}">Password</button>${act("u", u.id)}</div></td></tr>`).join("") || '<tr><td colspan=4 class="mut p-6">No users.</td></tr>'}</tbody></table></div>${tbp(up.html)}</div>`;
+      }
+      const av = (n, ph, z) => ph ? `<img src="${ph}" alt="" style="width:${z}px;height:${z}px;object-fit:cover;border-radius:4px;flex:none">` : `<span style="width:${z}px;height:${z}px;border-radius:4px;background:var(--acc);color:var(--onx);flex:none;font-weight:700;display:grid;place-items:center;font-size:${z / 2.4}px">${esc((n || "?")[0])}</span>`;
+      const me = () => (R() === "student" ? St(S.user.sid) : U(S.user.id)) || {};
+      const phCard = () => `<div class="card p-4 mb-3 flex items-center gap-4 flex-wrap">${av(me().name, me().photo, 72)}<div><p class="font-semibold">Profile photo</p><p class="mut text-sm mb-2">Choose a picture of yourself (JPG or PNG).</p><div class="flex gap-2"><label class="btn sm cursor-pointer">${I("ul")}Choose photo<input id="phf" type="file" accept="image/*" class="sr-only"></label>${me().photo ? '<button type="button" class="b2" data-a="phx">Remove</button>' : ""}</div></div></div>`;
+      function setPhoto(file) {
+        const r = new FileReader();
+        r.onload = () => {
+          const im = new Image();
+          im.onload = () => {
+            const k = Math.min(1, 256 / Math.max(im.width, im.height)), cv = document.createElement("canvas");
+            cv.width = im.width * k; cv.height = im.height * k;
+            cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height);
+            me().photo = cv.toDataURL("image/jpeg", 0.82);
+            save(); toast("Photo updated"); render();
+          };
+          im.onerror = () => toast("Could not read that image", "err");
+          im.src = r.result;
+        };
+        r.readAsDataURL(file);
+      }
+      const sprof = () => {
+        const st = St(S.user.sid) || {};
+        return `<h1 class="text-2xl font-bold mb-4">My profile</h1>${phCard()}<div class="grid lg:grid-cols-2 gap-3"><div class="card p-5"><h2 class="font-semibold mb-3">Personal info</h2><p class="mut text-sm">Name</p><p class="font-medium mb-3">${esc(st.name)}</p><p class="mut text-sm">Phone (username)</p><p class="font-medium mb-3">${esc(st.phone)}</p><p class="mut text-sm">Class</p><p class="font-medium mb-3">${esc(cn(st.cls))}</p><p class="mut text-sm">Email</p><p class="font-medium">${esc(st.email || "-")}</p></div><form id="spw" class="card p-5"><h2 class="font-semibold mb-3">Change password</h2><label class="block mb-3"><span class="mut text-sm">Current password</span><input name="c" type="password" class="inp mt-1" required></label><label class="block mb-3"><span class="mut text-sm">New password</span><input name="a" type="password" class="inp mt-1" required></label><label class="block mb-4"><span class="mut text-sm">Confirm new password</span><input name="b" type="password" class="inp mt-1" required></label><button class="btn w-full">Update password</button></form></div>`;
+      };
+      const prof = () => {
+        if (R() === "student") return sprof();
+        const u = U(S.user.id);
+        return `<h1 class="text-2xl font-bold mb-4">My profile</h1>${phCard()}<div class="grid lg:grid-cols-2 gap-3"><form id="pf" class="card p-5"><h2 class="font-semibold mb-3">Personal info</h2><label class="block mb-3"><span class="mut text-sm">Name</span><input name="n" class="inp mt-1" value="${esc(u.name)}" required></label><label class="block mb-3"><span class="mut text-sm">Phone (username)</span><input name="p" class="inp mt-1" value="${esc(u.phone)}" required></label><label class="block mb-4"><span class="mut text-sm">Email</span><input name="e" type="email" class="inp mt-1" value="${esc(u.email || "")}" placeholder="name@example.com"></label><button class="btn w-full">Save changes</button></form><form id="pw" class="card p-5"><h2 class="font-semibold mb-3">Change password</h2><label class="block mb-3"><span class="mut text-sm">Current password</span><input name="c" type="password" class="inp mt-1" required></label><label class="block mb-3"><span class="mut text-sm">New password</span><input name="a" type="password" class="inp mt-1" required></label><label class="block mb-4"><span class="mut text-sm">Confirm new password</span><input name="b" type="password" class="inp mt-1" required></label><button class="btn w-full">Update password</button></form></div>`;
+      };
+      /* ===== notifications ===== */
+      const NC = () =>
+        VC().concat(R() === "supervisor" ? DB.classes.filter((c) => c.fin && c.fsup == S.user.id) : []);
+      const not = () =>
+        `<div class="flex items-center gap-2 mb-4 flex-wrap"><h1 class="text-2xl font-bold flex-1">Notifications</h1>${"Notification" in window && Notification.permission !== "granted" ? `<button class="b2" data-a="ena">${I("bell")}Enable alerts</button>` : ""}<button class="b2" data-a="read">Mark all read</button></div>${R() !== "student" ? `<form id="cnf" class="card p-3 mb-4 grid sm:grid-cols-4 gap-2"><select name="c" class="inp" required><option value="">Choose class</option>${NC().map((c) => `<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select><input name="t" class="inp sm:col-span-2" placeholder="One note for the whole class..." required><button class="btn">${I("bell")}Send to class</button></form>` : ""}<div class="space-y-2">${
+          myN()
+            .map(
+              (n) =>
+                `<div class="card p-4 flex items-center gap-3 ${rd(n) ? "opacity-60" : ""}"><span class="flex-1">${isC(n) ? '<span class="badge mr-2" style="background:#3390ec26;color:#3390ec">Class</span>' : ""}${esc(n.t)}</span><button class="b2" data-a="dn" data-id="${n.id}" aria-label="Delete" style="color:#ef4444">${I("trash")}</button></div>`,
+            )
+            .join("") || empty("You are all caught up.")
+        }</div>`;
+      /* ===== ended classes (supervisor) ===== */
+      const gcard = (c, p) => {
+        const dn = p.status === "Completed";
+        return `<div class="card p-4"><div class="flex items-center gap-2 flex-wrap"><div class="flex-1 min-w-0"><p class="font-semibold">Group ${p.id} · ${esc(p.title)}</p><p class="mut text-sm">${p.members.map(sn).map(esc).join(", ")}</p></div>${bd(p.status)}</div>${sbar(done(p), 6)}<div class="flex gap-1.5 items-center flex-wrap mt-2">${p.w.map((v, i) => `<button class="wk w${v === null ? "n" : v}" title="${esc(c.tasks[i])}" data-a="w" data-id="${p.id},${i}">${v === 1 ? "✓" : v === 0 ? "✕" : "W" + (i + 1)}</button>`).join("")}<b class="w-9 h-9 grid place-items-center rounded-lg" style="background:var(--bg2)">${done(p)}</b>${dn ? "" : `<button class="b2" data-a="done" data-id="${p.id}">Complete</button>`}${nxv(c, p)}<button class="b2" data-a="fbk" data-id="${p.id}">${I("list")}Notes</button></div></div>`;
+      };
+      const finD = (c) => (c.finAt ? new Date(c.finAt).toLocaleString("en", { month: "long", year: "numeric" }) : "-");
+      function endV(c) {
+        const ps = DB.projects.filter((p) => p.cls === c.id && p.status !== "Rejected"),
+          rem = ps.filter((p) => p.status !== "Completed").length;
+        const fl = ps.filter((p) => (!S.q || lc(p.title, S.q) || p.members.some((m) => lc(sn(m), S.q))) && (!S.st || (S.st === "done") === (p.status === "Completed")));
+        return `<button class="b2 mb-4" data-a="ecb">‹ Back to ended classes</button><div class="card p-4 mb-4"><div class="flex items-center gap-2 flex-wrap"><h1 class="text-xl font-bold flex-1">${esc(c.name)}</h1>${rem ? `<span class="badge" style="background:#f08a2426;color:#f08a24">${rem} not completed</span>` : '<span class="badge" style="background:#3fbf7f26;color:#3fbf7f">All completed</span>'}</div><p class="mut text-sm">${ps.length} groups · Teacher: ${esc(un(c.teacher))} · Ended: ${finD(c)}</p><p class="mut text-sm mt-1">You can correct any week here. Removing a ✓ needs a note to the group.</p></div><div class="grid sm:grid-cols-3 gap-2 mb-3"><input id="q" data-f="q" class="inp" placeholder="Search group or student..." value="${esc(S.q)}" aria-label="Search">${cb("st", [["", "All groups"], ["done", "Completed"], ["open", "Not completed"]], S.st)}</div><div class="space-y-3">${fl.map((p) => gcard(c, p)).join("") || empty("No groups match.")}</div>`;
+      }
+      function end() {
+        if (S.ec && C(S.ec)) return endV(C(S.ec));
+        const mine = DB.classes.filter((c) => c.fin && c.fsup == S.user.id),
+          mo = (c) => (c.finAt ? new Date(c.finAt).toISOString().slice(0, 7) : ""),
+          mons = [...new Set(mine.map(mo).filter(Boolean))].sort().reverse(),
+          yrs = [...new Set(mine.map(cyr).filter(Boolean))].sort(),
+          L = mine.filter(
+            (c) =>
+              (!S.q || lc(c.name, S.q)) &&
+              (!S.cls || c.name === S.cls) &&
+              (!S.tch || c.teacher == S.tch) &&
+              (!S.yr || cyr(c) === S.yr) &&
+              (!S.mo || mo(c) === S.mo),
+          ),
+          pe = pgn("en", L, 5);
+        return `<h1 class="text-2xl font-bold mb-1">Ended classes</h1><p class="mut mb-4">Classes you finished. Press View class to open its groups and tracker.</p><div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-4"><input id="q" data-f="q" class="inp" placeholder="Search class..." value="${esc(S.q)}" aria-label="Search">${cb("cls", [["", "All classes"], ...mine.map((c) => [c.name, c.name])], S.cls)}${cb("tch", tchOpts(), S.tch)}${cb("yr", [["", "All years"], ...yrs.map((y) => [y, y])], S.yr)}${cb("mo", [["", "All months"], ...mons.map((m) => [m, new Date(m + "-01T00:00").toLocaleString("en", { month: "long", year: "numeric" })])], S.mo)}</div><div class="grid md:grid-cols-2 gap-3">${
+          pe.rows
+            .map((c) => {
+              const ps = DB.projects.filter((p) => p.cls === c.id && p.status !== "Rejected"),
+                rem = ps.filter((p) => p.status !== "Completed").length;
+              return `<div class="card lift p-4"><div class="flex items-center gap-2 flex-wrap"><p class="font-bold flex-1">${esc(c.name)}</p>${rem ? `<span class="badge" style="background:#f08a2426;color:#f08a24">${rem} not completed</span>` : '<span class="badge" style="background:#3fbf7f26;color:#3fbf7f">All completed</span>'}</div><p class="mut text-sm">${ps.length} groups · Teacher: ${esc(un(c.teacher))} · Ended: ${finD(c)}</p><button class="btn mt-3" data-a="ecv" data-id="${c.id}">View class</button></div>`;
+            })
+            .join("") || empty("No ended classes yet.")
+        }</div>${cdp(pe.html)}`;
+      }
+      /* ===== supervisor notes + student portal ===== */
+      const OPS = ["Insert", "Autofill", "Update", "Delete", "Read", "Clear"];
+      const opsH = (o) =>
+        o.length
+          ? `<div class="flex flex-wrap gap-1 mt-1"><span class="mut text-xs mr-1">Missing:</span>${o.map((x) => `<span class="badge" style="background:#ef444426;color:#ef4444">${esc(x)}</span>`).join("")}</div>`
+          : "";
+      const okB =
+        '<span class="badge" style="background:#3fbf7f26;color:#3fbf7f">Resolved</span>';
+      function fbNote(p, f, upd) {
+        const c = C(p.cls),
+          t =
+            f.wk == null
+              ? "Note from supervisor"
+              : `W${f.wk + 1} (${c.tasks[f.wk]}) returned`;
+        p.members.forEach((m) =>
+          note(
+            `${upd ? "Updated: " : ""}${p.title}: ${t}${f.ops.length ? ". Missing: " + f.ops.join(", ") : ""}${f.text ? ". " + f.text : ""}`,
+            "s" + m,
+          ),
+        );
+      }
+      function fbMgr(pid, eid) {
+        const p = DB.projects.find((x) => x.id == pid);
+        if (!p) return;
+        const c = C(p.cls),
+          ed = eid ? DB.fb.find((x) => x.id == eid) : null,
+          L = DB.fb.filter((x) => x.pid == p.id).sort((a, b) => b.at - a.at),
+          wl = (k) => (k == null ? "General note" : `W${k + 1} · ${c.tasks[k]}`);
+        document.querySelectorAll(".fbm").forEach((x) => x.remove());
+        const o = document.createElement("div");
+        o.className =
+          "fbm fixed inset-0 z-40 grid place-items-center p-3 bg-black/50";
+        o.innerHTML = `<div class="card p-5 w-full max-w-lg pop max-h-[92vh] overflow-y-auto"><div class="flex items-center gap-2 mb-1"><h2 class="font-bold flex-1">Notes to group</h2><button type="button" class="b2" data-x="close" aria-label="Close">${I("x")}</button></div><p class="mut text-sm mb-3">${esc(p.title)} · ${esc(p.members.map(sn).join(", "))}</p>
+<div class="space-y-2 mb-3">${
+          L.map(
+            (x) =>
+              `<div class="p-3 rounded-xl" style="background:var(--bg2)"><div class="flex items-start gap-2"><div class="flex-1 min-w-0"><p class="font-semibold text-sm">${esc(wl(x.wk))} ${x.ok ? okB : ""}</p>${opsH(x.ops)}${x.text ? `<p class="text-sm mt-1">${esc(x.text)}</p>` : ""}<p class="mut text-xs mt-1">${new Date(x.at).toLocaleString()}</p></div><button type="button" class="b2" data-x="e" data-id="${x.id}" aria-label="Edit">${I("edit")}</button><button type="button" class="b2" data-x="d" data-id="${x.id}" aria-label="Delete" style="color:#ef4444">${I("trash")}</button></div></div>`,
+          ).join("") || '<p class="mut text-sm">No notes yet.</p>'
+        }</div>${L.length ? '<button type="button" class="b2 mb-4" data-x="clr">Clear all</button>' : ""}
+<form style="border-top:1px solid var(--line)" class="pt-3"><p class="font-semibold mb-2">${ed ? "Edit note" : "Add note"}</p>
+<label class="block mb-3"><span class="mut text-sm">Task</span><select name="k" class="inp mt-1"><option value="">General note</option>${c.tasks.map((t, i) => `<option value="${i}" ${ed && ed.wk === i ? "selected" : ""}>W${i + 1} · ${esc(t)}</option>`).join("")}</select></label>
+<p class="mut text-sm mb-1">What is missing</p><div id="mo" class="flex flex-wrap gap-2 mb-3"></div>
+<label class="block mb-3"><span class="mut text-sm">Note</span><textarea name="t" rows="3" class="inp mt-1" placeholder="Write what they must fix...">${esc(ed ? ed.text : "")}</textarea></label>
+<div class="flex gap-2"><button class="btn flex-1">${ed ? "Save changes" : "Send to group"}</button>${ed ? '<button type="button" class="b2" data-x="new">Cancel edit</button>' : ""}</div></form></div>`;
+        document.body.append(o);
+        const f = o.querySelector("form");
+        const missL = (k) =>
+          k === null
+            ? c.tasks.flatMap((t, i) => (pts(c, i).length ? pts(c, i).map((x) => `W${i + 1} · ${t} › ${x}`) : [`W${i + 1} · ${t}`]))
+            : pts(c, k).length ? pts(c, k).slice() : [c.tasks[k]];
+        let pre = new Set(ed ? ed.ops : []);
+        const fillM = () => {
+          const k = f.elements.k.value === "" ? null : +f.elements.k.value,
+            l = missL(k);
+          [...pre].forEach((x) => l.includes(x) || l.push(x));
+          o.querySelector("#mo").innerHTML = l.map((x) => `<label class="pill cursor-pointer"><input type="checkbox" name="o" value="${esc(x)}" ${pre.has(x) ? "checked" : ""}>${esc(x)}</label>`).join("");
+        };
+        fillM();
+        f.elements.k.addEventListener("change", () => {
+          pre = new Set();
+          fillM();
+        });
+        o.onclick = (e) => {
+          if (e.target === o) return o.remove();
+          const b = e.target.closest("[data-x]");
+          if (!b) return;
+          const x = b.dataset.x;
+          if (x === "close") o.remove();
+          else if (x === "new") fbMgr(pid);
+          else if (x === "e") fbMgr(pid, b.dataset.id);
+          else if (x === "d")
+            ask("Delete this note?", () => {
+              DB.fb = DB.fb.filter((y) => y.id != b.dataset.id);
+              fbMgr(pid);
+            });
+          else if (x === "clr")
+            ask(
+              "Clear all notes for this group?",
+              () => {
+                DB.fb = DB.fb.filter((y) => y.pid != p.id);
+                fbMgr(pid);
+              },
+              "Clear",
+            );
+        };
+        f.onsubmit = (e) => {
+          e.preventDefault();
+          const k = f.elements.k.value === "" ? null : +f.elements.k.value,
+            ops = [...f.querySelectorAll("input[name=o]:checked")].map(
+              (x) => x.value,
+            ),
+            t = f.elements.t.value.trim();
+          if (k == null && !t) return toast("Write the note first", "err");
+          if (ed) {
+            Object.assign(ed, { wk: k, ops, text: t, at: Date.now() });
+            fbNote(p, ed, true);
+          } else {
+            const n = {
+              id: nid(DB.fb),
+              pid: p.id,
+              wk: k,
+              ops,
+              text: t,
+              by: S.user.id,
+              at: Date.now(),
+              ok: false,
+            };
+            DB.fb.push(n);
+            fbNote(p, n);
+          }
+          save();
+          toast("Sent to group");
+          fbMgr(pid);
+          render();
+        };
+      }
+      const wbd = (v) =>
+        v === 1
+          ? '<span class="badge" style="background:#3fbf7f26;color:#3fbf7f">Done</span>'
+          : v === 0
+            ? '<span class="badge" style="background:#ef444426;color:#ef4444">Returned: fix needed</span>'
+            : '<span class="badge" style="background:#9fa3b426;color:#9fa3b4">Not started</span>';
+      const fbH = (f) =>
+        `<div class="p-3 rounded-xl mt-2" style="background:var(--bg2)"><div class="flex items-center gap-2 flex-wrap"><span class="mut text-xs">${esc(un(f.by))} · ${new Date(f.at).toLocaleString()}</span>${f.ok ? okB : ""}</div>${opsH(f.ops)}${f.text ? `<p class="text-sm mt-1">${esc(f.text)}</p>` : ""}</div>`;
+      function por() {
+        const st = St(S.user.sid);
+        if (!st) return empty("Your student record was not found.");
+        const c = C(st.cls),
+          ps = DB.projects.filter((p) => p.members.includes(st.id));
+        return `<h1 class="text-2xl font-bold mb-1">My project</h1><p class="mut mb-4">${esc(st.name)} · ${esc(cn(st.cls))}${c && c.sup ? ` · Supervisor: <b>${esc(un(c.sup))}</b> (${c.day} at ${c.slot})` : ""}</p>${st.pw ? "" : '<div class="card p-3 mb-4 text-sm" style="border-left:4px solid #f08a24">You are using the default password (last 4 digits of your phone). You can change it in Profile.</div>'}${
+          ps
+            .map((p) => {
+              const cc = C(p.cls),
+                fb = DB.fb
+                  .filter((x) => x.pid === p.id)
+                  .sort((a, b) => b.at - a.at),
+                gen = fb.filter((x) => x.wk == null);
+              return `<article class="card p-4 mb-4"><div class="flex items-start gap-2 flex-wrap"><div class="flex-1 min-w-0"><p class="text-xs font-semibold" style="color:var(--acc)">Group ${p.id} · ${esc(cc.name)}</p><p class="font-bold text-lg">${esc(p.title)}</p></div>${bd(p.status)}</div><p class="mut text-sm mt-1">Members: ${p.members.map(sn).map(esc).join(", ")}</p><p class="mt-2"><b>${done(p)}/6</b> <span class="mut text-sm">weeks done</span></p>${sbar(done(p), 6)}${done(p) < 6 ? `<div class="p-3 rounded-xl mt-3" style="background:var(--bg2);border-left:4px solid var(--acc)"><p class="mut text-xs">This week's task · W${cur(p) + 1} · assigned automatically</p><p class="font-semibold">${esc(cc.tasks[cur(p)])}</p>${pts(cc, cur(p)).length ? `<p class="mut text-sm">${esc(pts(cc, cur(p)).join(" · "))}</p>` : ""}</div>` : ""}<div class="mt-4 space-y-2">${cc.tasks
+                .map((t, i) => {
+                  const v = p.w[i],
+                    wf = fb.filter((x) => x.wk === i);
+                  return `<div class="p-3 rounded-xl" style="border:1px solid var(--line)"><div class="flex items-center gap-2 flex-wrap"><span class="wk w${v === null ? "n" : v}">${v === 1 ? "✓" : v === 0 ? "✕" : "W" + (i + 1)}</span><div class="flex-1 min-w-0"><p class="font-medium">W${i + 1} · ${esc(t)}</p>${pts(cc, i).length ? `<p class="mut text-sm">${esc(pts(cc, i).join(" · "))}</p>` : ""}</div>${vBtn(cc, i, p)}${lockH(p, i)}${wbd(v)}</div>${wf.map(fbH).join("")}</div>`;
+                })
+                .join(
+                  "",
+                )}</div>${gen.length ? `<h3 class="font-semibold mt-4">Notes from supervisor</h3>${gen.map(fbH).join("")}` : ""}</article>`;
+            })
+            .join("") ||
+          empty("You are not in a project yet. Please contact your teacher.")
+        }${dockH(c, ps)}`;
+      }
+      /* ===== weekly task helpers, videos ===== */
+      const pts = (c, i) => (c.parts && c.parts[i]) || [];
+      const cur = (p) => {
+        const i = p.w.findIndex((x) => x !== 1);
+        return i < 0 ? 5 : i;
+      };
+      const ccur = (c) => {
+        const ps = DB.projects.filter((p) => p.cls === c.id && p.status !== "Rejected");
+        return ps.length ? Math.min(...ps.map(cur)) : 0;
+      };
+      const cms = (c) => [
+        ...new Set(
+          DB.projects.filter((p) => p.cls === c.id && p.status !== "Rejected").flatMap((p) => p.members),
+        ),
+      ];
+      /* each week has up to 2 videos (slot 0 = key "i", slot 1 = key "ib").
+         A group sees W1 first. W(n+1) opens only when W(n) is approved (✓). */
+      const vk = (i, s) => (s ? i + "b" : String(i));
+      const vhas = (c, i, s) => !!(c.vid && c.vid[vk(i, s)]);
+      const vopen = (p, i) => p.w[i] !== null || i <= cur(p);
+      const vOK = (c, i, p, s) => vhas(c, i, s || 0) && vopen(p, i);
+      const vseen = (i, s) => {
+        const t = St(S.user.sid) || {};
+        return !!(t.vw && t.vw[i + "_" + s]);
+      };
+      const vBtn = (c, i, p, full) => {
+        if (!vOK(c, i, p, 0)) return "";
+        const s = vseen(i, 0);
+        return `<button type="button" class="vbtn ${s ? "seen" : ""}" data-a="vview" data-id="${c.id},${i},0">${s ? "✓" : "▶"} ${full ? (s ? "Watched" : "Watch video") : "Video"}</button>`;
+      };
+      const dockH = (c, ps) => {
+        const p = ps[0];
+        if (!p) return "";
+        if (done(p) === 6) return '<div style="height:84px"></div><div class="dock"><div><p class="font-semibold">All 6 weeks done</p></div></div>';
+        const n = cur(p);
+        return `<div style="height:84px"></div><div class="dock"><div><p class="mut text-xs">W${n + 1} · this week</p><p class="font-semibold truncate">${esc(c.tasks[n])}</p></div>${vBtn(c, n, p, 1) || '<span class="mut text-xs">No video yet</span>'}</div>`;
+      };
+      const nxk = (p) => { let r = -1; p.w.forEach((v, i) => { if (v !== null) r = i; }); return Math.min(r + 1, 5); };
+      const nxv = (c, p) => {
+        const k = nxk(p), h = vhas(c, k, 0);
+        return `<button type="button" class="b2 xs nxv" ${h ? `data-a="vview" data-id="${c.id},${k},0"` : "disabled"} title="${h ? "" : "No video uploaded for this week"}">▶ Next video · W${k + 1}</button>`;
+      };
+      const lockH = (p, i) =>
+        p.w[i] === null && i > cur(p)
+          ? `<span class="mut text-xs inline-flex items-center gap-1">${I("lock")}Opens after W${i} is approved</span>`
+          : "";
+      const vbs = (c, i) =>
+        vhas(c, i, 0)
+          ? `<div class="vtile"><button type="button" class="vw" data-a="vview" data-id="${c.id},${i},0">▶ Watch video</button><button type="button" class="b2 xs" data-a="vadd" data-id="${c.id},${i},0" aria-label="Replace video">${I("edit")}</button><button type="button" class="b2 xs" data-a="vdel" data-id="${c.id},${i},0" style="color:#ef4444" aria-label="Remove video">${I("trash")}</button></div>`
+          : `<button type="button" class="vtile add" data-a="vadd" data-id="${c.id},${i},0">${I("plus")}Add video</button>`;
+      const idb = () =>
+        new Promise((res, rej) => {
+          const r = indexedDB.open("tpm_vid", 1);
+          r.onupgradeneeded = () => r.result.createObjectStore("v");
+          r.onsuccess = () => res(r.result);
+          r.onerror = () => rej(r.error);
+        });
+      const vput = async (k, b) => {
+        const d = await idb();
+        return new Promise((res, rej) => {
+          const t = d.transaction("v", "readwrite");
+          t.objectStore("v").put(b, k);
+          t.oncomplete = res;
+          t.onerror = () => rej(t.error);
+        });
+      };
+      const vget = async (k) => {
+        const d = await idb();
+        return new Promise((res, rej) => {
+          const q = d.transaction("v").objectStore("v").get(k);
+          q.onsuccess = () => res(q.result);
+          q.onerror = () => rej(q.error);
+        });
+      };
+      const vrm = async (k) => {
+        try {
+          (await idb()).transaction("v", "readwrite").objectStore("v").delete(k);
+        } catch (e) {}
+      };
+      function vidAdd(cid, i, s) {
+        s = s || 0;
+        const c = C(cid),
+          key = vk(i, s),
+          o = document.createElement("div");
+        o.className = "fixed inset-0 z-40 grid place-items-center p-3 bg-black/50";
+        o.innerHTML = `<form class="card p-5 w-full max-w-sm pop"><h2 class="font-bold mb-1">W${i + 1} · Video</h2><p class="mut text-sm mb-3">${esc(c.tasks[i])}</p><label class="block mb-3"><span class="mut text-sm">Upload a video file</span><input name="f" type="file" accept="video/*" class="inp mt-1"></label><label class="block mb-3"><span class="mut text-sm">or paste a video link (YouTube or .mp4)</span><input name="u" class="inp mt-1" placeholder="https://..."></label><div class="flex gap-2"><button class="btn flex-1">Save video</button><button type="button" class="b2" id="cx">Cancel</button></div></form>`;
+        document.body.append(o);
+        o.onclick = (e) => {
+          if (e.target.id === "cx" || e.target === o) o.remove();
+        };
+        o.querySelector("form").onsubmit = async (e) => {
+          e.preventDefault();
+          const f = e.target.elements,
+            file = f.f.files[0],
+            u = f.u.value.trim();
+          if (!file && !u) return toast("Choose a file or paste a link", "err");
+          c.vid = c.vid || {};
+          try {
+            if (file) {
+              await vput(cid + "_" + key, file);
+              c.vid[key] = { t: "file", k: cid + "_" + key, n: file.name };
+            } else c.vid[key] = { t: "url", v: u };
+          } catch (x) {
+            return toast("Could not store that video", "err");
+          }
+          DB.classes.flatMap(cms).forEach((m) => note(`New video for ${c.name}: W${i + 1} · ${c.tasks[i]}`, "s" + m));
+          save();
+          o.remove();
+          toast("Video added");
+          render();
+        };
+      }
+      async function vidView(cid, i, s) {
+        s = s || 0;
+        const c = C(cid),
+          v = c.vid && c.vid[vk(i, s)];
+        if (!v) return;
+        let body = "",
+          obj = null;
+        if (v.t === "url") {
+          const m = v.v.match(/(?:youtu\.be\/|v=|embed\/)([\w-]{11})/);
+          body = m
+            ? `<iframe class="w-full" style="aspect-ratio:16/9;border:0;border-radius:var(--rad,4px)" src="https://www.youtube.com/embed/${m[1]}" allowfullscreen></iframe>`
+            : `<video class="vid" controls playsinline src="${esc(v.v)}"></video>`;
+        } else {
+          try {
+            const b = await vget(v.k);
+            if (b) obj = URL.createObjectURL(b);
+            body = b
+              ? `<video class="vid" controls playsinline src="${obj}"></video>`
+              : '<p class="mut">This video file was not found on this device.</p>';
+          } catch (e) {
+            body = '<p class="mut">Could not open the video.</p>';
+          }
+        }
+        const o = document.createElement("div");
+        o.className = "fixed inset-0 z-40 grid place-items-center p-3 bg-black/70";
+        o.innerHTML = `<div class="card p-3 w-full max-w-2xl pop" style="max-height:96vh;max-height:96dvh;overflow-y:auto"><div class="flex items-center gap-2 mb-2"><h2 class="font-bold flex-1 text-sm">W${i + 1} · ${esc(c.tasks[i])} · Video</h2><button type="button" class="b2" id="cx" aria-label="Close">${I("x")}</button></div>${body}</div>`;
+        document.body.append(o);
+        o.onclick = (e) => {
+          if (e.target.closest("#cx") || e.target === o) {
+            o.querySelectorAll("video").forEach((x) => x.pause());
+            o.remove();
+            if (obj) URL.revokeObjectURL(obj);
+            if (S.user && R() === "student") render();
+          }
+        };
+      }
+      /* removing a ✓ in Ended classes needs a note */
+      function reqNote(p, k) {
+        const c = C(p.cls),
+          o = document.createElement("div");
+        o.className = "fixed inset-0 z-40 grid place-items-center p-3 bg-black/50";
+        o.innerHTML = `<form class="card p-5 w-full max-w-sm pop"><h2 class="font-bold mb-1">Remove ✓ from W${k + 1}</h2><p class="mut text-sm mb-3">${esc(p.title)} · ${esc(c.tasks[k])}. A note to the group is required.</p><textarea name="t" rows="3" class="inp" placeholder="Why is this week being returned?" required></textarea><div class="flex gap-2 mt-3"><button class="btn flex-1">Remove and send note</button><button type="button" class="b2" id="cx">Cancel</button></div></form>`;
+        document.body.append(o);
+        o.onclick = (e) => {
+          if (e.target.id === "cx" || e.target === o) o.remove();
+        };
+        o.querySelector("form").onsubmit = (e) => {
+          e.preventDefault();
+          const t = e.target.elements.t.value.trim();
+          if (!t) return;
+          p.w[k] = 0;
+          if (p.status === "Completed") p.status = "In Progress";
+          const fe = { id: nid(DB.fb), pid: p.id, wk: k, ops: [], text: t, by: S.user.id, at: Date.now(), ok: false };
+          DB.fb.push(fe);
+          fbNote(p, fe);
+          save();
+          o.remove();
+          toast("Week returned with note");
+          render();
+        };
+      }
+      /* ===== account security: forced email + new password, forgot password ===== */
+      const need = () => {
+        try {
+          if (R() === "student") {
+            const t = St(S.user.sid) || {};
+            return !t.pw || !t.email;
+          }
+          const u = U(S.user.id) || {};
+          return !u.pwSet || !u.email;
+        } catch (e) {
+          return false;
+        }
+      };
+      function forceM() {
+        if (document.getElementById("fsm")) return;
+        const stu = R() === "student",
+          o = document.createElement("div"),
+          r0 = stu ? St(S.user.sid) : U(S.user.id);
+        o.id = "fsm";
+        o.className = "fixed inset-0 z-50 grid place-items-center p-3 bg-black/60";
+        o.innerHTML = `<form class="card p-5 w-full max-w-sm pop max-h-[92vh] overflow-y-auto"><h2 class="font-bold text-lg mb-1">Secure your account</h2><p class="mut text-sm mb-3">Username: <b>${esc(r0.phone)}</b>. Add your email and choose a new password to continue.</p><label class="block mb-3"><span class="mut text-sm">Email</span><input name="e" type="email" class="inp mt-1" value="${esc(r0.email || "")}" required></label><label class="block mb-3"><span class="mut text-sm">New password</span><input name="a" type="password" class="inp mt-1" required></label><label class="block mb-2"><span class="mut text-sm">Confirm new password</span><input name="b" type="password" class="inp mt-1" required></label><p id="fse" class="text-red-500 text-sm min-h-5" role="alert"></p><div class="flex gap-2"><button class="btn flex-1">Save and continue</button><button type="button" class="b2" id="fso">Sign out</button></div></form>`;
+        document.body.append(o);
+        o.querySelector("#fso").onclick = () => {
+          o.remove();
+          S.user = null;
+          SS.removeItem("tpm_u");
+          render();
+        };
+        o.querySelector("form").onsubmit = (e) => {
+          e.preventDefault();
+          const f = e.target.elements,
+            er = o.querySelector("#fse"),
+            rec = stu ? St(S.user.sid) : U(S.user.id),
+            first = stu ? !rec.pw : !rec.pwSet,
+            old = stu ? spw(rec) : rec.password,
+            a = f.a.value;
+          if (a.length < 4) return (er.textContent = "New password needs at least 4 characters.");
+          if (first && a === old) return (er.textContent = "Choose a password different from the current one.");
+          if (a !== f.b.value) return (er.textContent = "Passwords do not match.");
+          rec.email = f.e.value.trim();
+          if (stu) rec.pw = a;
+          else {
+            rec.password = a;
+            rec.pwSet = true;
+          }
+          save();
+          o.remove();
+          toast("Account secured");
+          render();
+        };
+      }
+      /* email sending needs a server: this stub stores the message; connect your mail API here */
+      function sendMail(to, sub, body) {
+        DB.outbox = (DB.outbox || []).concat({ to, sub, body, at: Date.now() }).slice(-20);
+        save();
+      }
+      function fpModal() {
+        const o = document.createElement("div");
+        o.className = "fixed inset-0 z-40 grid place-items-center p-3 bg-black/50";
+        let rs = null;
+        const find = (un_) => {
+            const u = DB.users.find((x) => x.username === un_);
+            if (u) return { k: "u", id: u.id, r: u };
+            const t = DB.students.find((x) => x.phone === un_);
+            return t ? { k: "s", id: t.id, r: t } : null;
+          },
+          mask = (m) => m.replace(/^(.).*(@.*)$/, "$1***$2");
+        o.onclick = (e) => {
+          if (e.target.id === "cx" || e.target === o) o.remove();
+        };
+        const s1 = () => {
+          o.innerHTML = `<form class="card p-5 w-full max-w-sm pop"><h2 class="font-bold mb-1">Forgot password</h2><p class="mut text-sm mb-3">Enter your username (phone). A reset code is sent to your registered email.</p><input name="u" class="inp mb-2" placeholder="Username (phone)" required><p id="fe" class="text-red-500 text-sm min-h-5"></p><div class="flex gap-2"><button class="btn flex-1">Send code</button><button type="button" class="b2" id="cx">Cancel</button></div></form>`;
+          o.querySelector("form").onsubmit = (e) => {
+            e.preventDefault();
+            const x = find(e.target.elements.u.value.trim());
+            if (!x || !x.r.email) return (o.querySelector("#fe").textContent = "No email is registered for this username. Ask your supervisor or admin.");
+            rs = { x, code: String(Math.floor(100000 + Math.random() * 900000)), exp: Date.now() + 9e5 };
+            sendMail(x.r.email, APP() + " password reset", "Your reset code is " + rs.code + ". It expires in 15 minutes.");
+            s2();
+          };
+        };
+        const s2 = () => {
+          o.innerHTML = `<form class="card p-5 w-full max-w-sm pop"><h2 class="font-bold mb-1">Reset password</h2><p class="mut text-sm mb-2">Code sent to ${esc(mask(rs.x.r.email))}.</p><div class="card p-2 mb-3 text-sm" style="border-left:4px solid #f08a24">Email sending is not connected in this offline version. Demo code: <b>${rs.code}</b></div><input name="c" class="inp mb-2" placeholder="Code" required autocomplete="off"><input name="a" type="password" class="inp mb-2" placeholder="New password" required><input name="b" type="password" class="inp mb-2" placeholder="Confirm new password" required><p id="fe" class="text-red-500 text-sm min-h-5"></p><div class="flex gap-2"><button class="btn flex-1">Reset password</button><button type="button" class="b2" id="cx">Cancel</button></div></form>`;
+          o.querySelector("form").onsubmit = (e) => {
+            e.preventDefault();
+            const f = e.target.elements,
+              er = o.querySelector("#fe");
+            if (f.c.value.trim() !== rs.code || Date.now() > rs.exp) return (er.textContent = "Wrong or expired code.");
+            if (f.a.value.length < 4) return (er.textContent = "New password needs at least 4 characters.");
+            if (f.a.value !== f.b.value) return (er.textContent = "Passwords do not match.");
+            const r = rs.x.k === "u" ? U(rs.x.id) : St(rs.x.id);
+            if (rs.x.k === "u") {
+              r.password = f.a.value;
+              r.pwSet = true;
+            } else r.pw = f.a.value;
+            save();
+            o.remove();
+            toast("Password reset. Sign in with the new password.");
+          };
+        };
+        document.body.append(o);
+        s1();
+      }
+      /* ===== alerts: sound + system notification, even when the tab is in the background ===== */
+      let AC = null;
+      document.addEventListener("click", () => {
+        try {
+          AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+          AC.resume && AC.resume();
+        } catch (e) {}
+      });
+      function ding() {
+        try {
+          AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+          AC.resume && AC.resume();
+          [880, 1320].forEach((fr, i) => {
+            const o = AC.createOscillator(),
+              g = AC.createGain(),
+              t = AC.currentTime + i * 0.18;
+            o.type = "sine";
+            o.frequency.value = fr;
+            o.connect(g);
+            g.connect(AC.destination);
+            g.gain.setValueAtTime(0.0001, t);
+            g.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+            o.start(t);
+            o.stop(t + 0.4);
+          });
+        } catch (e) {}
+      }
+      function alertN(n) {
+        ding();
+        try {
+          if ("Notification" in window && Notification.permission === "granted") {
+            const x = new Notification(APP(), { body: n.t, tag: "tpm" + n.id });
+            x.onclick = () => {
+              window.focus();
+              x.close();
+            };
+          }
+        } catch (e) {}
+      }
+      function askPerm(f) {
+        try {
+          if ("Notification" in window && Notification.permission === "default") Notification.requestPermission().then(() => render());
+          else if (f && "Notification" in window && Notification.permission === "denied") toast("Alerts are blocked in your browser settings", "warn");
+        } catch (e) {}
+      }
+      const seen = new Set();
+      function scan(first) {
+        if (!S.user) return;
+        const un_ = myN().filter((n) => !rd(n));
+        un_.forEach((n) => {
+          const k = n.id + ":" + n.t;
+          if (seen.has(k)) return;
+          seen.add(k);
+          if (!first) alertN(n);
+        });
+        document.title = (un_.length ? "(" + un_.length + ") " : "") + APP();
+      }
+      /* pick up changes saved by other tabs/devices sharing this storage */
+      setInterval(() => {
+        try {
+          const raw = LS.getItem(K);
+          if (!raw || raw === LAST) return;
+          LAST = raw;
+          DB = JSON.parse(raw);
+          DB.bin = DB.bin || [];
+          DB.cfg = DB.cfg || {};
+          cfgApply();
+          sync();
+          if (!S.user) return;
+          scan(false);
+          const a = document.activeElement;
+          if (!(a && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) && !document.querySelector(".fixed.inset-0")) render();
+        } catch (e) {}
+      }, 2000);
+      /* ===== recycle bin (admin) ===== */
+      const bin = (type, label, data) => {
+        DB.bin.push({ id: nid(DB.bin), type, label, data, at: Date.now(), by: S.user.name });
+      };
+      function restore(x) {
+        const d = x.data,
+          fr = (arr, o) => {
+            if (arr.some((y) => y.id === o.id)) o.id = nid(arr);
+          };
+        if (x.type === "user") {
+          if (DB.users.some((u) => u.username === d.username)) return toast("That username is already used", "err"), false;
+          fr(DB.users, d);
+          DB.users.push(d);
+        } else if (x.type === "student") {
+          if (DB.students.some((t) => t.phone === d.s.phone)) return toast("That phone already exists", "err"), false;
+          if (!C(d.s.cls)) return toast("Restore its class first", "err"), false;
+          fr(DB.students, d.s);
+          (d.pj || []).forEach((p) => {
+            if (!C(p.cls)) return;
+            fr(DB.projects, p);
+            p.members = [d.s.id];
+            DB.projects.push(p);
+          });
+          (d.pm || []).forEach((pid) => {
+            const p = DB.projects.find((y) => y.id === pid);
+            if (p && !p.members.includes(d.s.id) && p.members.length < 3) p.members.push(d.s.id);
+          });
+          DB.students.push(d.s);
+        } else if (x.type === "class") {
+          if (DB.classes.some((c) => c.name.toLowerCase() === d.c.name.toLowerCase())) return toast("A class with that name exists", "err"), false;
+          fr(DB.classes, d.c);
+          Object.assign(d.c, { sup: null, day: null, slot: null });
+          if (!U(d.c.teacher)) d.c.teacher = null;
+          DB.classes.push(d.c);
+          const sm = {},
+            pm = {};
+          d.students.forEach((t) => {
+            if (DB.students.some((y) => y.phone === t.phone)) return;
+            const o = t.id;
+            if (DB.students.some((y) => y.id === o)) t.id = nid(DB.students);
+            sm[o] = t.id;
+            t.cls = d.c.id;
+            DB.students.push(t);
+          });
+          d.projects.forEach((p) => {
+            const o = p.id;
+            p.members = p.members.map((m) => sm[m]).filter(Boolean);
+            if (!p.members.length) return;
+            if (DB.projects.some((y) => y.id === o)) p.id = nid(DB.projects);
+            pm[o] = p.id;
+            p.cls = d.c.id;
+            DB.projects.push(p);
+          });
+          d.fb.forEach((f) => {
+            if (pm[f.pid] == null) return;
+            f.pid = pm[f.pid];
+            f.id = nid(DB.fb);
+            DB.fb.push(f);
+          });
+        } else if (x.type === "project") {
+          const p = d.p;
+          p.members = p.members.filter((m) => St(m));
+          if (!C(p.cls) || !p.members.length) return toast("Restore its class and students first", "err"), false;
+          fr(DB.projects, p);
+          DB.projects.push(p);
+        }
+      }
+      function binPage() {
+        const pb = pgn("bn", [...DB.bin].reverse());
+        return `<div class="flex items-center gap-2 mb-4 flex-wrap"><h2 class="text-lg font-semibold flex-1">Recycle bin</h2>${DB.bin.length ? `<button class="b2" style="color:#ef4444" data-a="bxa">${I("trash")}Empty bin</button>` : ""}</div><p class="mut mb-4">Deleted users, students, classes and projects. Restore them or remove them permanently.</p><div class="card"><div class="scroll"><table><thead><tr><th>Type</th><th>Name</th><th>Deleted by</th><th>Date</th><th></th></tr></thead><tbody>${pb.rows.map((x) => `<tr><td class="capitalize">${x.type}</td><td>${esc(x.label)}</td><td>${esc(x.by || "-")}</td><td>${new Date(x.at).toLocaleString()}</td><td class="text-right"><div class="flex gap-2 justify-end"><button class="b2" data-a="br" data-id="${x.id}">Restore</button><button class="b2" style="color:#ef4444" data-a="bx" data-id="${x.id}">${I("trash")}Delete forever</button></div></td></tr>`).join("") || '<tr><td colspan=5 class="mut p-6">The recycle bin is empty.</td></tr>'}</tbody></table></div>${tbp(pb.html)}</div>`;
+      }
+
+      function setPg() {
+        const t = S.sTab || "bin";
+        return `<h1 class="text-2xl font-bold mb-3">Settings</h1><div class="flex gap-2 mb-4 flex-wrap">${[["bin", "Recycle bin", "trash"], ["cfg", "Setting changes", "cog"]].map(([k, l, ic]) => `<button class="pill ${t === k ? "sel" : ""}" data-a="stab" data-id="${k}">${I(ic)}${l}</button>`).join("")}</div>${t === "cfg" ? cfgPage() : binPage()}`;
+      }
+      function cfgPage() {
+        const c = DB.cfg || {};
+        return `<form id="cfgf" class="card p-4 max-w-xl space-y-4"><label class="block"><span class="mut text-sm">Project name</span><input name="n" class="inp mt-1" value="${esc(c.name || "Thesis Hub")}" maxlength="40" required></label>
+<div><span class="mut text-sm">Main color</span><div class="flex items-center gap-2 flex-wrap mt-1"><input name="c" type="color" value="${esc(c.color || "#3390ec")}" aria-label="Color" style="width:48px;height:40px;padding:2px;border:1px solid var(--line);background:var(--in);border-radius:var(--rad,4px)">${SWS.map((h) => `<button type="button" data-a="sw" data-id="${h}" aria-label="${h}" style="width:28px;height:28px;background:${h};border-radius:var(--rad,4px);border:2px solid var(--line)"></button>`).join("")}</div></div>
+<label class="block"><span class="mut text-sm">Corners (buttons, cards, logo)</span><select name="r" class="inp mt-1">${RADS.map(([v, l]) => `<option value="${v}" ${String(c.rad != null && c.rad !== "" ? c.rad : 4) === v ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+<div><span class="mut text-sm">Logo</span><div class="flex items-center gap-3 mt-1 flex-wrap">${logoH(56)}<label class="btn sm cursor-pointer">${I("ul")}Choose logo<input id="lgf" type="file" accept="image/*" class="sr-only"></label>${c.logo ? '<button type="button" class="b2" data-a="lgx">Remove logo</button>' : ""}</div></div>
+<div class="flex gap-2"><button class="btn flex-1">Save changes</button><button type="button" class="b2" data-a="cfd">Reset to default</button></div></form>`;
+      }
+      function cfgVals() {
+        const f = document.getElementById("cfgf");
+        return { name: f.elements.n.value.trim(), color: f.elements.c.dataset.t ? f.elements.c.value : (DB.cfg.color || ""), rad: f.elements.r.value, logo: DB.cfg.logo };
+      }
+      function setLogo(file) {
+        const r = new FileReader();
+        r.onload = () => {
+          const im = new Image();
+          im.onload = () => {
+            const k = Math.min(1, 256 / Math.max(im.width, im.height)), cv = document.createElement("canvas");
+            cv.width = Math.max(1, im.width * k); cv.height = Math.max(1, im.height * k);
+            cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height);
+            DB.cfg.logo = cv.toDataURL("image/png");
+            save(); toast("Logo updated"); render();
+          };
+          im.onerror = () => toast("Could not read that image", "err");
+          im.src = r.result;
+        };
+        r.readAsDataURL(file);
+      }
+
+      /* ===== render + events ===== */
+      const PGS = { dash, trk, proj, stu, cls, sch, usr, not, tsk, prof, por, end, bin: setPg };
+      function render(fid) {
+        cfgApply();
+        const r = $("#app");
+        if (!S.user) {
+          r.innerHTML = loginV();
+          const fo = document.getElementById("fsm");
+          if (fo) fo.remove();
+          return;
+        }
+        if (S.page !== "prof" && !MENU[R()].includes(S.page))
+          S.page = MENU[R()][0];
+        r.innerHTML = shell(PGS[S.page]());
+        if (need()) forceM();
+        if (S.page === "dash") charts();
+        else {
+          CH.forEach((c) => c.destroy());
+          CH = [];
+        }
+        if (fid) {
+          const e = document.getElementById(fid);
+          if (e) {
+            e.focus();
+            try {
+              e.setSelectionRange(1e4, 1e4);
+            } catch (x) {}
+          }
+        }
+      }
+      const A = $("#app");
+      A.oninput = (e) => {
+        if (e.target.closest && e.target.closest("#cfgf")) {
+          if (e.target.name === "c") e.target.dataset.t = 1;
+          return cfgApply(cfgVals());
+        }
+        if (e.target.dataset.cs) {
+          S.cbq = e.target.value;
+          return render("cbs");
+        }
+        const f = e.target.dataset.f;
+        if (f) {
+          S[f] = e.target.value;
+          S.pn = {};
+          render(e.target.id);
+        }
+      };
+      A.onchange = (e) => {
+        if (e.target.id === "lgf" && e.target.files[0]) return setLogo(e.target.files[0]);
+        if (e.target.closest && e.target.closest("#cfgf")) return cfgApply(cfgVals());
+        if (e.target.id === "phf" && e.target.files[0]) return setPhoto(e.target.files[0]);
+        if (e.target.id === "imp" && e.target.files[0])
+          stage(e.target.files[0]);
+      };
+      A.onclick = (e) => {
+        if (S.pd && !e.target.closest(".pdx")) {
+          S.pd = false;
+          render();
+        }
+        if (S.open && !e.target.closest(".cbx")) {
+          S.open = "";
+          S.cbq = "";
+          render();
+        }
+        const b = e.target.closest("[data-a]");
+        if (!b) return;
+        const a = b.dataset.a,
+          id = b.dataset.id,
+          P = (n) => DB.projects.find((p) => p.id == n);
+        if (a === "cb") {
+          S.open = S.open === id ? "" : id;
+          S.cbq = "";
+          render(S.open ? "cbs" : "");
+          return;
+        }
+        if (a === "pick") {
+          S[id] = b.dataset.v;
+          S.pn = {};
+          S.open = "";
+          S.cbq = "";
+          render();
+          return;
+        }
+        if (a === "pg") {
+          const [pk, pn] = id.split(":");
+          S.pn[pk] = +pn;
+          render();
+          return;
+        }
+        if (a === "go") {
+          S.page = id;
+          S.pn = {};
+          S.q = S.st = S.cls = S.tch = "";
+          S.tp = "";
+          S.yr = "";
+          S.pj = "";
+          S.mo = "";
+          S.ec = null;
+          S.lf = null;
+          S.pd = false;
+          S.open = "";
+          S.cbq = "";
+          S.nav = false;
+        } else if (a === "nav") S.nav = !S.nav;
+        else if (a === "theme") setTheme();
+        else if (a === "pd") S.pd = !S.pd;
+        else if (a === "ld") {
+          S.lf = { cls: S.cls, q: S.q, st: S.st, tch: S.tch, sort: S.sort };
+          S.pn = {};
+        } else if (a === "unl") {
+          S.lf = null;
+          S.pn = {};
+        } else if (a === "ecv") {
+          S.ec = +id; S.q = ""; S.st = "";
+          S.pn = {};
+        } else if (a === "ecb") {
+          S.ec = null; S.q = ""; S.st = "";
+          S.pn = {};
+        } else if (a === "phx") {
+          me().photo = "";
+          save();
+        } else if (a === "fp") return fpModal();
+        else if (a === "ena") return askPerm(true);
+        else if (a === "vadd") return vidAdd(...id.split(",").map(Number));
+        else if (a === "vview") {
+          const [ci, wi, sl = 0] = id.split(",").map(Number),
+            c = C(ci);
+          if (R() === "student") {
+            const st = St(S.user.sid),
+              p = DB.projects.find((x) => x.cls === ci && x.members.includes(st.id));
+            if (!p || !vOK(c, wi, p, sl)) return toast("This video is not open yet", "warn");
+            st.vw = st.vw || {};
+            st.vw[wi + "_" + sl] = 1;
+            save();
+          }
+          return vidView(ci, wi, sl);
+        } else if (a === "vdel") {
+          const [ci, wi, sl = 0] = id.split(",").map(Number);
+          return ask("Remove this video?", () => {
+            delete C(ci).vid[vk(wi, sl)];
+            vrm(ci + "_" + vk(wi, sl));
+          }, "Remove");
+        } else if (a === "stab") {
+          S.sTab = id;
+          S.pn = {};
+        } else if (a === "sw") {
+          const ci = document.querySelector("#cfgf [name=c]");
+          ci.value = id;
+          ci.dataset.t = 1;
+          cfgApply(cfgVals());
+          return;
+        } else if (a === "lgx") {
+          DB.cfg.logo = "";
+          save();
+        } else if (a === "cfd")
+          return ask("Reset name, color, corners and logo to default?", () => {
+            DB.cfg = {};
+          }, "Reset");
+        else if (a === "spr") {
+          const s = St(+id);
+          return ask("Reset the password of " + s.name + " to the default (last 4 digits of the phone: " + String(s.phone).replace(/\D/g, "").slice(-4) + ")? The student must choose a new password at the next sign in.", () => {
+            delete s.pw;
+            toast("Password reset to default");
+          }, "Reset");
+        } else if (a === "br") {
+          const x = DB.bin.find((y) => y.id == id);
+          if (x && restore(x) !== false) {
+            DB.bin = DB.bin.filter((y) => y !== x);
+            save();
+            toast("Restored");
+          }
+        } else if (a === "bx")
+          return ask("Delete this item forever?", () => {
+            DB.bin = DB.bin.filter((y) => y.id != id);
+          }, "Delete forever");
+        else if (a === "bxa")
+          return ask("Empty the recycle bin? This cannot be undone.", () => {
+            DB.bin = [];
+          }, "Empty");
+        else if (a === "out") {
+          S.pd = false;
+          S.user = null;
+          SS.removeItem("tpm_u");
+        } else if (a === "tab") (S.tab = id), (S.pn = {});
+        else if (a === "new") return newProj();
+        else if (a === "sup") return supModal(+id);
+        else if (a === "fin") {
+          const c = C(+id),
+            rem = DB.projects.filter(
+              (p) =>
+                p.cls === c.id &&
+                p.status !== "Rejected" &&
+                p.status !== "Completed",
+            ).length;
+          return ask(
+            "Finish " +
+              c.name +
+              "? It will be removed from your schedule and its day/time slot becomes free." +
+              (rem
+                ? " " +
+                  rem +
+                  " group(s) are not completed yet; you can still complete them from Ended classes."
+                : ""),
+            () => {
+              relCls(c);
+              toast("Class finished: slot is free");
+            },
+            "Finish",
+          );
+        } else if (a === "unsup") {
+          const c = C(+id);
+          note("Class removed from your schedule: " + c.name, c.sup);
+          c.sup = null;
+          c.day = null;
+          c.slot = null;
+          save();
+          toast("Supervisor unassigned", "warn");
+        } else if (a === "w") {
+          const [i, k] = id.split(",").map(Number),
+            p = P(i);
+          if (S.page === "end" && p.w[k] === 1) return reqNote(p, k);
+          p.w[k] = p.w[k] === 1 ? 0 : p.w[k] === 0 ? null : 1;
+          if (done(p) === 6) p.status = "Completed";
+          else if (
+            p.status === "Pending" ||
+            p.status === "Approved" ||
+            p.status === "Completed"
+          )
+            p.status = "In Progress";
+          if (p.w[k] === 1 && done(p) < 6) {
+            const n = cur(p),
+              cc = C(p.cls);
+            p.members.forEach((m) =>
+              note(`Your new weekly task (W${n + 1}): ${cc.tasks[n]}. Watch the video first.`, "s" + m),
+            );
+          }
+          let fid = null;
+          if (p.w[k] === 1)
+            DB.fb.forEach((x) => {
+              if (x.pid === p.id && x.wk === k) x.ok = true;
+            });
+          if (p.w[k] === 0) {
+            let fe = DB.fb.find((x) => x.pid === p.id && x.wk === k && !x.ok);
+            if (!fe) {
+              fe = {
+                id: nid(DB.fb),
+                pid: p.id,
+                wk: k,
+                ops: [],
+                text: "",
+                by: S.user.id,
+                at: Date.now(),
+                ok: false,
+              };
+              DB.fb.push(fe);
+              fbNote(p, fe);
+            }
+            fid = fe.id;
+          }
+          save();
+          if (fid) fbMgr(p.id, fid);
+        } else if (a === "fbk") {
+          return fbMgr(+id);
+        } else if (a === "done") {
+          P(id).status = "Completed";
+          save();
+          toast("Project completed");
+        } else if (a === "stop") {
+          const p = P(id);
+          if (p.status === "Suspended") {
+            p.status = p.prev || "In Progress";
+            toast("Project resumed");
+          } else {
+            return fm(
+              "Stop project",
+              [{ n: "w", l: "Reason for stopping" }],
+              (v) => {
+                p.prev = p.status;
+                p.status = "Suspended";
+                note(`Project stopped: ${p.title}. Reason: ${v.w}`);
+                toast("Project stopped", "warn");
+              },
+            );
+          }
+          save();
+        } else if (a === "apr") {
+          let n = 0;
+          DB.projects.forEach((p) => {
+            if (p.status === "Pending") {
+              p.status = "Approved";
+              n++;
+            }
+          });
+          save();
+          toast(n + " projects approved");
+        } else if (a === "ok") return commit();
+        else if (a === "no") S.staged = null;
+        else if (a === "tpl" || a === "exp" || a === "exps") {
+          const w = XLSX.utils.book_new(),
+            rows =
+              a === "tpl"
+                ? [
+                    {
+                      Name: "Ayan Ali",
+                      Class: "IT-August-Abdikani-2026",
+                      Address: "Hargeysa",
+                      Phone: "0634000000",
+                    },
+                  ]
+                : a === "exp"
+                  ? VP().map((p) => ({
+                      Title: p.title,
+                      Class: cn(p.cls),
+                      Members: p.members.map(sn).join(", "),
+                      Done: done(p),
+                      Status: p.status,
+                    }))
+                  : DB.students
+                      .filter((s) => VC().some((c) => c.id === s.cls))
+                      .map((s) => ({
+                        Name: s.name,
+                        Class: cn(s.cls),
+                        Phone: s.phone,
+                        Status: stat(s),
+                      }));
+          XLSX.utils.book_append_sheet(
+            w,
+            XLSX.utils.json_to_sheet(rows),
+            "Data",
+          );
+          XLSX.writeFile(w, a + ".xlsx");
+          return;
+        } else if (a === "pw") {
+          return fm(
+            "Reset password",
+            [{ n: "w", l: "New password", t: "password" }],
+            (v) => {
+              U(+id).password = v.w;
+              U(+id).pwSet = false;
+              toast("Password updated");
+            },
+          );
+        } else if (a === "du") {
+          if (DB.classes.some((c) => c.teacher == id)) {
+            toast("Reassign this teacher classes first", "err");
+            return;
+          }
+          return ask("Delete this user?", () => {
+            bin("user", U(id).name, U(id));
+            DB.classes.forEach((c) => {
+              if (c.sup == id) {
+                c.sup = null;
+                c.day = null;
+                c.slot = null;
+              }
+            });
+            DB.users = DB.users.filter((u) => u.id != id);
+            toast("User deleted", "warn");
+          });
+        } else if (a === "read") {
+          myN().forEach((n) => {
+            if (isC(n)) {
+              n.rd = n.rd || [];
+              if (!n.rd.includes(S.user.id)) n.rd.push(S.user.id);
+            } else n.read = true;
+          });
+          save();
+        } else if (a === "dn") {
+          const nn = DB.notes.find((x) => x.id == id);
+          if (nn && isC(nn)) {
+            nn.hd = nn.hd || [];
+            nn.hd.push(S.user.id);
+          } else DB.notes = DB.notes.filter((n) => n.id != id);
+          save();
+        } else if (a === "eu") {
+          const u = U(+id);
+          return fm(
+            "Edit teacher",
+            [
+              { n: "n", l: "Name", v: u.name },
+              { n: "p", l: "Phone (username)", v: u.phone },
+              { n: "e", l: "Email", v: u.email || "", t: "email", r: 0 },
+              {
+                n: "r",
+                l: "Type",
+                v: u.role,
+                o: [
+                  ["supervisor", "Supervisor"],
+                  ["theory", "Theory teacher"],
+                  ["office", "Office"],
+                ],
+              },
+            ],
+            (v) => {
+              if (DB.users.some((x) => x.id !== u.id && x.username === v.p)) {
+                toast("That phone is already used", "err");
+                return false;
+              }
+              if (v.r !== "supervisor")
+                DB.classes.forEach((c) => {
+                  if (c.sup == u.id) {
+                    c.sup = null;
+                    c.day = null;
+                    c.slot = null;
+                  }
+                });
+              Object.assign(u, {
+                name: v.n,
+                phone: v.p,
+                username: v.p,
+                email: v.e,
+                role: v.r,
+              });
+              toast("Teacher updated");
+            },
+          );
+        } else if (a === "es") {
+          const s = St(+id);
+          return fm(
+            "Edit student",
+            [
+              { n: "n", l: "Name", v: s.name },
+              { n: "p", l: "Phone", v: s.phone },
+              {
+                n: "c",
+                l: "Class",
+                v: s.cls,
+                o: VC().map((c) => [c.id, c.name]),
+              },
+            ],
+            (v) => {
+              if (DB.students.some((x) => x.id !== s.id && x.phone === v.p)) {
+                toast("Phone already exists", "err");
+                return false;
+              }
+              if (
+                +v.c !== s.cls &&
+                DB.projects.some((p) => p.members.includes(s.id))
+              ) {
+                toast(
+                  "Remove the student from the project before changing class",
+                  "err",
+                );
+                return false;
+              }
+              Object.assign(s, { name: v.n, phone: v.p, cls: +v.c });
+              toast("Student updated");
+            },
+          );
+        } else if (a === "ds") {
+          const s = St(+id);
+          return ask("Delete " + s.name + "?", () => {
+            bin("student", s.name, { s: { ...s }, pj: DB.projects.filter((p) => p.members.length === 1 && p.members[0] === s.id).map((p) => ({ ...p })), pm: DB.projects.filter((p) => p.members.length > 1 && p.members.includes(s.id)).map((p) => p.id) });
+            DB.projects.forEach(
+              (p) => (p.members = p.members.filter((m) => m !== s.id)),
+            );
+            DB.projects = DB.projects.filter((p) => p.members.length);
+            DB.students = DB.students.filter((x) => x.id !== s.id);
+            toast("Student deleted", "warn");
+          });
+        } else if (a === "ec") {
+          const c = C(+id);
+          return fm(
+            "Edit class",
+            [
+              { n: "n", l: "Class name", v: c.name },
+              ...(mgr()
+                ? [
+                    {
+                      n: "t",
+                      l: "Teacher",
+                      v: c.teacher,
+                      o: DB.users
+                        .filter((u) => u.role === "theory")
+                        .map((u) => [u.id, u.name]),
+                    },
+                  ]
+                : []),
+            ],
+            (v) => {
+              if (
+                DB.classes.some(
+                  (x) =>
+                    x.id !== c.id && x.name.toLowerCase() === v.n.toLowerCase(),
+                )
+              ) {
+                toast("A class with that name already exists", "err");
+                return false;
+              }
+              c.name = v.n;
+              if (v.t) c.teacher = +v.t;
+              toast("Class updated");
+            },
+          );
+        } else if (a === "dc") {
+          const c = C(+id);
+          return ask(
+            "Delete " + c.name + " with its students and projects?",
+            () => {
+              bin("class", c.name, { c: { ...c }, students: DB.students.filter((s) => s.cls === c.id), projects: DB.projects.filter((p) => p.cls === c.id), fb: DB.fb.filter((f) => DB.projects.some((p) => p.cls === c.id && p.id === f.pid)) });
+              DB.projects = DB.projects.filter((p) => p.cls !== c.id);
+              DB.students = DB.students.filter((s) => s.cls !== c.id);
+              DB.classes = DB.classes.filter((x) => x.id !== c.id);
+              toast("Class deleted", "warn");
+            },
+          );
+        } else if (a === "ep") {
+          const p = P(id);
+          return fm(
+            "Edit project",
+            [
+              { n: "t", l: "Title", v: p.title },
+              {
+                n: "s",
+                l: "Status",
+                v: p.status,
+                o: [
+                  "Pending",
+                  "Approved",
+                  "In Progress",
+                  "Completed",
+                  "Suspended",
+                  "Rejected",
+                ].map((x) => [x, x]),
+              },
+            ],
+            (v) => {
+              const d = DB.projects.find(
+                (x) =>
+                  x.id !== p.id &&
+                  x.status !== "Rejected" &&
+                  norm(x.title) === norm(v.t),
+              );
+              if (d) {
+                toast("another one exist named " + d.title, "err");
+                return false;
+              }
+              p.title = v.t;
+              p.status = v.s;
+              toast("Project updated");
+            },
+          );
+        } else if (a === "dp") {
+          const p = P(id);
+          return ask("Delete project " + p.title + "?", () => {
+            bin("project", p.title, { p });
+            DB.projects = DB.projects.filter((x) => x.id !== p.id);
+            toast("Project deleted", "warn");
+          });
+        }
+        render();
+      };
+      A.onsubmit = (e) => {
+        e.preventDefault();
+        const f = e.target,
+          id = f.id,
+          g = (n) => f.elements[n].value.trim();
+        if (id === "lf") {
+          let u = DB.users.find(
+            (x) => x.username === g("u") && x.password === f.p.value,
+          );
+          if (!u) {
+            const st = DB.students.find(
+              (x) => x.phone === g("u") && spw(x) === f.p.value,
+            );
+            if (st)
+              u = {
+                id: "s" + st.id,
+                sid: st.id,
+                name: st.name,
+                phone: st.phone,
+                role: "student",
+              };
+          }
+          if (!u) return ($("#er").textContent = "Wrong username or password.");
+          S.user = u;
+          S.page = "dash";
+          SS.setItem("tpm_u", JSON.stringify(u));
+          scan(true);
+          askPerm();
+        } else if (id === "cfgf") {
+          if (R() !== "admin") return;
+          const v = cfgVals();
+          DB.cfg = Object.assign(DB.cfg, { name: v.name, color: v.color, rad: v.rad });
+          save();
+          cfgApply();
+          toast("Settings saved");
+        } else if (id === "spw") {
+          const st = St(S.user.sid);
+          if (g("c") !== spw(st))
+            return toast("Current password is wrong", "err");
+          if (g("a").length < 4)
+            return toast("New password needs at least 4 characters", "err");
+          if (g("a") !== g("b")) return toast("Passwords do not match", "err");
+          st.pw = g("a");
+          save();
+          toast("Password changed");
+        } else if (id === "pf") {
+          const u = U(S.user.id);
+          if (DB.users.some((x) => x.id !== u.id && x.username === g("p")))
+            return toast("That phone is already used", "err");
+          u.name = g("n");
+          u.phone = g("p");
+          u.username = g("p");
+          u.email = g("e");
+          S.user = u;
+          SS.setItem("tpm_u", JSON.stringify(u));
+          save();
+          toast("Profile updated");
+        } else if (id === "pw") {
+          const u = U(S.user.id);
+          if (g("c") !== u.password)
+            return toast("Current password is wrong", "err");
+          if (g("a").length < 4)
+            return toast("New password needs at least 4 characters", "err");
+          if (g("a") !== g("b")) return toast("Passwords do not match", "err");
+          u.password = g("a");
+          u.pwSet = true;
+          save();
+          toast("Password changed");
+        } else if (id === "uf") {
+          if (DB.users.some((u) => u.username === g("p")))
+            return toast("That phone is already used", "err");
+          DB.users.push({
+            id: nid(DB.users),
+            name: g("n"),
+            phone: g("p"),
+            username: g("p"),
+            password: g("w"),
+            email: g("e"),
+            role: f.r.value,
+          });
+          save();
+          toast("Teacher added");
+        } else if (id === "cnf") {
+          const c = C(+f.c.value);
+          if (!c) return toast("Choose a class", "err");
+          note(`${S.user.name} (${c.name}): ${g("t")}`, "c" + c.id);
+          toast("Note sent to " + c.name);
+        } else if (id === "cf") {
+          const n = g("n");
+          if (DB.classes.some((c) => c.name.toLowerCase() === n.toLowerCase()))
+            return toast("A class with that name already exists", "err");
+          DB.classes.push({
+            id: nid(DB.classes),
+            name: n,
+            teacher: R() === "theory" ? S.user.id : +f.t.value,
+            sup: null,
+            day: null,
+            slot: null,
+            tasks: [1, 2, 3, 4, 5, 6].map((i) => "Task " + i),
+          });
+          save();
+          toast("Class added");
+        } else if (id === "sf") {
+          const c = DB.classes.find((x) => x.name === g("c"));
+          if (!c) return toast("Pick a class from the list", "err");
+          if (DB.students.some((s) => s.phone === g("p")))
+            return toast("Phone already exists", "err");
+          DB.students.push({
+            id: nid(DB.students),
+            name: g("n"),
+            cls: c.id,
+            phone: g("p"),
+          });
+          save();
+          toast("Student added");
+        } else if (f.dataset.id && S.page === "tsk") {
+          const c = C(+f.dataset.id),
+            old = c.tasks.concat(),
+            oldP = JSON.stringify(c.parts || []);
+          DB.tpl.tasks = [0, 1, 2, 3, 4, 5].map((i) => g("t" + i));
+          DB.tpl.parts = [0, 1, 2, 3, 4, 5].map((i) =>
+            g("p" + i).split(",").map((x) => x.trim()).filter(Boolean),
+          );
+          sync();
+          const op = JSON.parse(oldP),
+            ch = c.tasks
+              .map((t, i) =>
+                t !== old[i] || JSON.stringify(c.parts[i]) !== JSON.stringify(op[i] || []) ? i : -1,
+              )
+              .filter((i) => i >= 0);
+          if (ch.length)
+            DB.classes.flatMap(cms).forEach((m) =>
+              note(`Task updated in ${c.name}: ${ch.map((i) => "W" + (i + 1) + " " + c.tasks[i]).join(", ")}`, "s" + m),
+            );
+          save();
+          toast("Tasks saved");
+        }
+        render();
+      };
+      /* ===== searchable combo for every <select> (same look as filter combos) ===== */
+      function enh(s) {
+        if (s.dataset.sc) return;
+        s.dataset.sc = 1;
+        const w = document.createElement("div");
+        w.className = "cbx2 relative";
+        s.before(w);
+        w.append(s);
+        const cls = s.className;
+        s.className = "";
+        s.tabIndex = -1;
+        s.style.cssText =
+          "position:absolute;left:0;bottom:0;width:1px;height:1px;opacity:0;pointer-events:none";
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className =
+          cls + " flex items-center justify-between gap-2 text-left";
+        b.setAttribute("aria-haspopup", "listbox");
+        b.innerHTML =
+          '<span class="truncate"></span><span style="display:flex;transition:transform .15s">' +
+          I("chev") +
+          "</span>";
+        w.append(b);
+        const lab = () => {
+          const o = s.options[s.selectedIndex];
+          b.firstChild.textContent = o ? o.text : "";
+        };
+        lab();
+        new MutationObserver(lab).observe(s, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+        });
+        s.addEventListener("change", lab);
+        let p = null;
+        const close = () => {
+          if (p) {
+            p.remove();
+            p = null;
+            b.style.cssText = "";
+            b.setAttribute("aria-expanded", "false");
+            b.lastChild.style.transform = "";
+          }
+        };
+        w._close = close;
+        const list = (q) => {
+          const l = [...s.options].filter((o) => lc(o.text, q));
+          p.querySelector("[role=listbox]").innerHTML =
+            l
+              .map(
+                (o) =>
+                  `<button type="button" role="option" class="w-full text-left px-3 py-2 rounded-lg" data-v="${esc(o.value)}" style="${o.value === s.value ? "color:var(--acc);font-weight:600" : ""}">${esc(o.text)}</button>`,
+              )
+              .join("") || '<p class="mut text-sm px-3 py-2">No results</p>';
+        };
+        b.onclick = () => {
+          if (p) return close();
+          p = document.createElement("div");
+          p.className = "absolute left-0 right-0 mt-1 p-2 card";
+          p.style.zIndex = 60;
+          p.innerHTML =
+            '<input class="inp mb-1" placeholder="Search..." autocomplete="off"><div class="overflow-y-auto" style="max-height:200px" role="listbox"></div>';
+          w.append(p);
+          b.style.cssText =
+            "border-color:var(--acc);box-shadow:0 0 0 2px rgba(47,123,255,.25)";
+          b.setAttribute("aria-expanded", "true");
+          b.lastChild.style.transform = "rotate(180deg)";
+          list("");
+          const i = p.querySelector("input");
+          i.focus();
+          i.oninput = () => list(i.value);
+          p.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const o = e.target.closest("[data-v]");
+            if (o) {
+              s.value = o.dataset.v;
+              close();
+              s.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+          };
+          i.onkeydown = (e) => {
+            if (e.key === "Escape") close();
+            if (e.key === "Enter") {
+              e.preventDefault();
+              const f = p.querySelector("[data-v]");
+              if (f) f.click();
+            }
+          };
+        };
+      }
+      const enhAll = (r) =>
+        (r.matches && r.matches("select") ? [r] : [])
+          .concat([...(r.querySelectorAll ? r.querySelectorAll("select") : [])])
+          .forEach(enh);
+      new MutationObserver((m) =>
+        m.forEach((x) =>
+          x.addedNodes.forEach((n) => n.nodeType === 1 && enhAll(n)),
+        ),
+      ).observe(document.body, { childList: true, subtree: true });
+      document.addEventListener("click", (e) =>
+        document.querySelectorAll(".cbx2").forEach((w) => {
+          if (!w.contains(e.target)) w._close && w._close();
+        }),
+      );
+      autoRel();
+      render();
+      enhAll(document.body);
+      scan(true);
+    </script>
+  </body>
+</html>
